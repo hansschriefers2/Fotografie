@@ -1,0 +1,178 @@
+---
+import { Image } from "astro:assets";
+import Layout from "../layouts/Layout.astro";
+import { photos } from "../data/fotos";
+import { site } from "../config";
+
+// TODO: Durch ein Porträt von dir ersetzen, z. B.:
+//   node scripts/optimize-images.mjs ~/Downloads/Portraet src/assets/ueber-mich
+//   import portrait from "../assets/ueber-mich/ueber-mich-01.jpg";
+const portrait = photos.familie04.src;
+
+const values = [
+  {
+    title: "Ruhe & Geduld",
+    text: "Babys und Kinder geben das Tempo vor. Wir nehmen uns Zeit fürs Kuscheln, Stillen und Spielen – die schönsten Bilder entstehen, wenn sich alle wohlfühlen.",
+  },
+  {
+    title: "Echt statt gestellt",
+    text: "Keine steifen Posen, keine künstlichen Kulissen. Ich halte fest, wie ihr wirklich seid: eure Blicke, eure Hände, eure kleinen Rituale.",
+  },
+  {
+    title: "Sicherheit & Vertrauen",
+    text: "Ihr sollt euch bei mir von Anfang an gut aufgehoben fühlen. Wir besprechen vorher alles in Ruhe, beim Shooting bestimmt ihr, was sich gut anfühlt – und eure Bilder zeige ich nur, wenn ihr es ausdrücklich erlaubt.",
+  },
+];
+
+const erwartet = [
+  "Ein persönliches Vorgespräch, in dem wir alles in Ruhe planen",
+  "Einen kleinen Styling-Guide, damit ihr wisst, was gut aussieht",
+  "Ein Shooting ohne Zeitdruck – Pausen sind immer eingeplant",
+  "Liebevoll von Hand bearbeitete Bilder in einer privaten Online-Galerie",
+  "Kostenfreie Terminverschiebung, wenn euer Kind krank ist",
+];
+
+const zahlen = [
+  { wert: "20+", label: "Jahre hinter der Kamera" },
+  { wert: "2", label: "eigene Kinder" },
+  { wert: "35", label: "Jahre jung" },
+];
+---
+
+<Layout
+  title="Über mich"
+  description={`Lernt die Fotografin hinter ${site.name} kennen – und warum mir zeitlose Familienerinnerungen so am Herzen liegen.`}
+>
+  <!-- Intro -->
+  <section class="bg-linen pt-32 pb-20 sm:pt-40 sm:pb-28">
+    <div class="container-page grid items-center gap-12 lg:grid-cols-[5fr_6fr] lg:gap-20">
+      <div class="relative mx-auto w-full max-w-md lg:max-w-none">
+        <div class="relative aspect-[4/5] overflow-hidden rounded-t-full">
+          <Image
+            src={portrait}
+            alt={`Porträt von ${site.firstName}, Fotografin bei ${site.name}`}
+            widths={[500, 800, 1100]}
+            sizes="(min-width: 1024px) 40vw, 90vw"
+            loading="eager"
+            class="absolute inset-0 h-full w-full bg-sand object-cover"
+          />
+        </div>
+        <div
+          aria-hidden="true"
+          class="absolute -bottom-6 -left-4 h-28 w-28 rounded-full bg-rose/40 blur-2xl sm:-left-8"
+        >
+        </div>
+      </div>
+
+      <div>
+        <p class="eyebrow">Über mich</p>
+        <h1 class="mt-4 text-5xl sm:text-6xl">Hallo, ich bin <em class="font-light">{site.firstName}</em>.</h1>
+        <div class="mt-7 space-y-4 text-lg leading-relaxed text-ink-soft">
+          <p>
+            Ich bin 35, lebe mit meiner Familie in Wurmberg und bin in meiner freien Zeit am liebsten draußen im Garten.
+            Seit über 20 Jahren fotografiere ich – und heute halte ich am liebsten die Zeit fest, in der Familien wachsen:
+            vom Babybauch über die ersten Tage bis zum Großwerden.
+          </p>
+          <p>
+            Kinder rennen, hüpfen, drehen sich im Kreis und kuscheln sich im nächsten Moment wieder an. Diese Bewegung,
+            dieses Lebendige möchte ich für euch festhalten – ehrlich, ungestellt und so, wie ihr wirklich seid. Damit ihr
+            eure Bilder in vielen Jahren anschaut und sofort wieder spürt, wie es sich angefühlt hat.
+          </p>
+        </div>
+        <dl class="mt-10 grid grid-cols-3 gap-x-6 gap-y-6 border-t border-ink/10 pt-8 sm:max-w-lg sm:gap-x-10">
+          {
+            zahlen.map((z) => (
+              <div class="flex flex-col">
+                <dt class="text-sm text-ink-soft">{z.label}</dt>
+                <dd class="order-first font-serif text-[2rem] text-ink sm:text-5xl">{z.wert}</dd>
+              </div>
+            ))
+          }
+        </dl>
+        <p class="mt-8 font-serif text-3xl text-rose-deep italic">{site.firstName}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Zitat -->
+  <section class="py-24 sm:py-32">
+    <figure class="container-page mx-auto max-w-4xl text-center">
+      <span aria-hidden="true" class="block font-serif text-7xl leading-none text-rose">„</span>
+      <blockquote class="font-serif text-3xl leading-snug text-ink sm:text-4xl lg:text-5xl">
+        Die schönsten Bilder entstehen nicht, wenn alle stillhalten – sondern wenn das Leben einfach passiert.
+      </blockquote>
+    </figure>
+  </section>
+
+  <!-- Werte -->
+  <section class="bg-linen py-24 sm:py-32">
+    <div class="container-page">
+      <div class="mx-auto max-w-2xl text-center">
+        <p class="eyebrow">Wie ich arbeite</p>
+        <h2 class="mt-4 text-4xl sm:text-5xl">Was mir wichtig ist</h2>
+      </div>
+      <div class="mt-16 grid gap-6 md:grid-cols-3">
+        {
+          values.map((v, i) => (
+            <article class="rounded-[1.75rem] bg-cream p-8 sm:p-10">
+              <span class="font-serif text-5xl text-rose">0{i + 1}</span>
+              <h3 class="mt-4 text-3xl">{v.title}</h3>
+              <p class="mt-4 leading-relaxed text-ink-soft">{v.text}</p>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Was euch erwartet -->
+  <section class="py-24 sm:py-32">
+    <div class="container-page grid items-center gap-14 lg:grid-cols-2 lg:gap-20">
+      <div class="order-2 lg:order-1">
+        <p class="eyebrow">Mit mir an eurer Seite</p>
+        <h2 class="mt-4 text-4xl sm:text-5xl">Was euch erwartet</h2>
+        <ul class="mt-10 space-y-5">
+          {
+            erwartet.map((e) => (
+              <li class="flex gap-4 border-b border-ink/10 pb-5 leading-relaxed text-ink-soft">
+                <span aria-hidden="true" class="mt-0.5 text-rose-deep">
+                  ✓
+                </span>
+                {e}
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+      <div class="order-1 grid grid-cols-2 gap-4 lg:order-2">
+        {
+          [photos.baby08, photos.familie06].map((p, i) => (
+            <div class:list={["relative aspect-[3/4] overflow-hidden rounded-2xl", { "mt-12": i === 0 }]}>
+              <Image
+                src={p.src}
+                alt={p.alt}
+                widths={[400, 700]}
+                sizes="(min-width: 1024px) 25vw, 50vw"
+                class="absolute inset-0 h-full w-full bg-sand object-cover"
+              />
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="bg-sand/60 py-24 sm:py-32">
+    <div class="container-page text-center">
+      <h2 class="mx-auto max-w-2xl text-4xl sm:text-5xl">Ich freue mich darauf, euch kennenzulernen.</h2>
+      <p class="mx-auto mt-5 max-w-xl leading-relaxed text-ink-soft">
+        Von Familie zu Familie: Schreibt mir einfach ganz unverbindlich – gern auch, wenn ihr erst einmal nur Fragen habt.
+      </p>
+      <div class="mt-9 flex flex-col justify-center gap-3 sm:flex-row">
+        <a href="/kontakt/" class="btn-primary">Kontakt aufnehmen</a>
+        <a href="/galerie/" class="btn-ghost">Meine Arbeiten ansehen</a>
+      </div>
+    </div>
+  </section>
+</Layout>

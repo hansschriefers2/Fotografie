@@ -1,0 +1,72 @@
+---
+import Logo from "./Logo.astro";
+import { legalNav, nav, pixieset, site, telHref } from "../config";
+
+const seiten = pixieset.galerieUrl ? [...nav, { href: "/kundengalerie/", label: "Kundengalerie" }] : nav;
+---
+
+<footer class="mt-auto bg-linen">
+  <div class="container-page grid gap-12 py-16 sm:grid-cols-2 lg:grid-cols-4">
+    <div class="lg:col-span-2">
+      <Logo />
+      <p class="mt-5 max-w-sm text-sm leading-relaxed text-ink-soft">
+        {site.tagline} in {site.region}. Natürliche Bilder, die eure Geschichte erzählen – heute und in vielen Jahren.
+      </p>
+    </div>
+
+    <nav aria-label="Seiten">
+      <h2 class="eyebrow mb-4 font-sans">Seiten</h2>
+      <ul class="space-y-2 text-sm">
+        {
+          seiten.map((item) => (
+            <li>
+              <a href={item.href} class="text-ink-soft transition-colors hover:text-ink">
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div>
+      <h2 class="eyebrow mb-4 font-sans">Kontakt</h2>
+      <ul class="space-y-2 text-sm text-ink-soft">
+        <li>
+          <a href={`mailto:${site.email}`} class="break-all transition-colors hover:text-ink">{site.email}</a>
+        </li>
+        <li>
+          <a href={telHref} class="transition-colors hover:text-ink">{site.phone}</a>
+        </li>
+        {
+          site.instagram && (
+            <li>
+              <a href={site.instagram} target="_blank" rel="noopener noreferrer" class="transition-colors hover:text-ink">
+                Instagram
+              </a>
+            </li>
+          )
+        }
+      </ul>
+    </div>
+  </div>
+
+  <div class="border-t border-ink/10">
+    <div
+      class="container-page flex flex-col gap-4 py-6 text-xs text-ink-soft sm:flex-row sm:items-center sm:justify-between"
+    >
+      <p>© {new Date().getFullYear()} {site.name}</p>
+      <ul class="flex flex-wrap gap-x-6 gap-y-2">
+        {
+          legalNav.map((item) => (
+            <li>
+              <a href={item.href} class="transition-colors hover:text-ink">
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+</footer>

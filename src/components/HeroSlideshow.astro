@@ -1,0 +1,192 @@
+---
+import { getImage } from "astro:assets";
+import type { Photo } from "../data/fotos";
+import { anfrageHref } from "../config";
+
+interface Props {
+  slides: Photo[];
+}
+const { slides } = Astro.props;
+
+const INTERVAL = 6000;
+const bilder = await Promise.all(
+  slides.map((s) => getImage({ src: s.src, widths: [960, 1600, 2400], format: "webp", quality: 85 })),
+);
+---
+
+<section
+  data-slideshow
+  data-interval={INTERVAL}
+  aria-roledescription="Karussell"
+  aria-label="Ausgewählte Fotos"
+  class="relative h-[100svh] min-h-[560px] w-full overflow-hidden bg-ink"
+>
+  {
+    slides.map((slide, i) => (
+      <div
+        data-slide
+        role="group"
+        aria-roledescription="Folie"
+        aria-label={`${i + 1} von ${slides.length}`}
+        aria-hidden={i === 0 ? "false" : "true"}
+        class:list={[
+          "absolute inset-0 transition-opacity duration-[1600ms] ease-in-out",
+          i === 0 ? "opacity-100" : "opacity-0",
+        ]}
+      >
+        {/* Bilder ab Folie 2 werden erst geladen, kurz bevor sie an der Reihe sind */}
+        <img
+          src={i === 0 ? bilder[i].src : undefined}
+          srcset={i === 0 ? bilder[i].srcSet.attribute : undefined}
+          data-src={bilder[i].src}
+          data-srcset={bilder[i].srcSet.attribute}
+          sizes="100vw"
+          alt={slide.alt}
+          width={slide.src.width}
+          height={slide.src.height}
+          decoding="async"
+          fetchpriority={i === 0 ? "high" : undefined}
+          class="h-full w-full object-cover"
+        />
+      </div>
+    ))
+  }
+
+  <!-- Verlauf für Lesbarkeit des Textes -->
+  <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink/75 via-ink/20 to-ink/35"></div>
+
+  <div class="absolute inset-x-0 bottom-0 pb-24 sm:pb-28">
+    <div class="container-page text-cream">
+      <p class="mb-4 text-xs font-semibold tracking-[0.3em] text-cream/85 uppercase">Baby · Familie · Babybauch</p>
+      <h1 class="max-w-3xl font-serif text-5xl leading-[1.02] sm:text-6xl lg:text-7xl">
+        Erinnerungen, die <em class="font-light">mitwachsen</em>.
+      </h1>
+      <p class="mt-5 max-w-xl text-base leading-relaxed text-cream/90 sm:text-lg">
+        Natürliche, zeitlose Bilder von den kleinen Momenten, die viel zu schnell groß werden.
+      </p>
+      <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+        <a href={anfrageHref} class="btn bg-cream text-ink hover:bg-rose">Shooting anfragen</a>
+        <a href="/galerie/" class="btn border border-cream/60 text-cream hover:bg-cream/15">Galerie ansehen</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Steuerung -->
+  <div class="absolute inset-x-0 bottom-0 pb-8">
+    <div class="container-page flex items-center justify-between">
+      <div class="flex gap-1">
+        {
+          slides.map((_, i) => (
+            <button
+              type="button"
+              data-dot={i}
+              aria-label={`Foto ${i + 1} anzeigen`}
+              aria-current={i === 0 ? "true" : "false"}
+              class="group flex h-8 items-center px-1"
+            >
+              <span class="block h-0.5 w-3 rounded-full bg-cream/45 transition-all duration-500 group-hover:bg-cream/80 group-aria-[current=true]:w-8 group-aria-[current=true]:bg-cream" />
+            </button>
+          ))
+        }
+      </div>
+      <div class="hidden gap-2 sm:flex">
+        {
+          [
+            { dir: "prev", label: "Vorheriges Foto", d: "M10 3L5 8l5 5" },
+            { dir: "next", label: "Nächstes Foto", d: "M6 3l5 5-5 5" },
+          ].map((b) => (
+            <button
+              type="button"
+              data-step={b.dir}
+              aria-label={b.label}
+              class="flex h-11 w-11 items-center justify-center rounded-full border border-cream/50 text-cream transition-colors hover:bg-cream hover:text-ink"
+            >
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d={b.d} stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </button>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const root = document.querySelector<HTMLElement>("[data-slideshow]");
+  if (root) {
+    const slides = [...root.querySelectorAll<HTMLElement>("[data-slide]")];
+    const dots = [...root.querySelectorAll<HTMLElement>("[data-dot]")];
+    const interval = Number(root.dataset.interval);
+    const count = slides.length;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let index = 0;
+    let paused = false;
+    let timer: number | undefined;
+
+    const load = (i: number) => {
+      const img = slides[i % count].querySelector("img")!;
+      if (!img.getAttribute("src")) {
+        img.srcset = img.dataset.srcset ?? "";
+        img.src = img.dataset.src ?? "";
+      }
+    };
+
+    const kenburns = () => {
+      slides.forEach((s, i) => {
+        const img = s.querySelector("img")!;
+        img.style.animation =
+          i === index && !reduced.matches ? `kenburns ${interval + 2000}ms ease-out forwards` : "";
+      });
+    };
+
+    const schedule = () => {
+      clearTimeout(timer);
+      if (!paused && !reduced.matches) timer = window.setTimeout(() => go(index + 1), interval);
+    };
+
+    const go = (i: number) => {
+      index = ((i % count) + count) % count;
+      load(index);
+      load(index + 1); // nächstes Bild schon vorladen
+      slides.forEach((s, n) => {
+        const active = n === index;
+        s.classList.toggle("opacity-100", active);
+        s.classList.toggle("opacity-0", !active);
+        s.setAttribute("aria-hidden", String(!active));
+      });
+      dots.forEach((d, n) => d.setAttribute("aria-current", String(n === index)));
+      kenburns();
+      schedule();
+    };
+
+    const pause = (p: boolean) => {
+      paused = p;
+      schedule();
+    };
+
+    dots.forEach((d) => d.addEventListener("click", () => go(Number(d.dataset.dot))));
+    root.querySelector("[data-step=prev]")?.addEventListener("click", () => go(index - 1));
+    root.querySelector("[data-step=next]")?.addEventListener("click", () => go(index + 1));
+    root.addEventListener("mouseenter", () => pause(true));
+    root.addEventListener("mouseleave", () => pause(false));
+    root.addEventListener("focusin", () => pause(true));
+    root.addEventListener("focusout", () => pause(false));
+    document.addEventListener("visibilitychange", () => pause(document.hidden));
+    root.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight") go(index + 1);
+      if (e.key === "ArrowLeft") go(index - 1);
+    });
+
+    let touchX: number | null = null;
+    root.addEventListener("touchstart", (e) => (touchX = e.touches[0].clientX), { passive: true });
+    root.addEventListener("touchend", (e) => {
+      if (touchX === null) return;
+      const dx = e.changedTouches[0].clientX - touchX;
+      if (Math.abs(dx) > 50) go(index + (dx < 0 ? 1 : -1));
+      touchX = null;
+    });
+
+    go(0);
+  }
+</script>

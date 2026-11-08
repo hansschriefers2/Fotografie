@@ -1,0 +1,26 @@
+---
+import Layout from "../layouts/Layout.astro";
+import PageHeader from "./PageHeader.astro";
+
+interface Props {
+  title: string;
+  heading?: string;
+}
+const { title, heading = title } = Astro.props;
+---
+
+<Layout title={title} noindex>
+  <PageHeader eyebrow="Rechtliches" title={heading} />
+  <section class="container-page py-16 sm:py-20">
+    <div class="mx-auto max-w-3xl">
+      {/* TODO: Hinweis entfernen, sobald die Texte rechtlich geprüft sind */}
+      <p role="note" class="mb-10 rounded-xl border border-rose/60 bg-rose/15 px-5 py-4 text-sm text-ink">
+        <strong>Mustertext:</strong> Diese Seite ist eine Vorlage und ersetzt keine Rechtsberatung. Bitte vor
+        Veröffentlichung mit echten Daten befüllen und prüfen lassen (z. B. Anwalt, IT-Recht-Kanzlei oder eRecht24).
+      </p>
+      <div class="prose-legal">
+        <slot />
+      </div>
+    </div>
+  </section>
+</Layout>

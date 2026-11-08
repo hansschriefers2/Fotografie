@@ -2,9 +2,11 @@
 import Layout from "../layouts/Layout.astro";
 ---
 
-<Layout title="Seite nicht gefunden">
-  <section class="seite schmal zentriert">
-    <h1>Diese Seite gibt es leider nicht.</h1>
-    <p><a href="/" class="knopf">Zur Startseite</a></p>
+<Layout title="Seite nicht gefunden" noindex>
+  <section class="container-page flex min-h-[70vh] flex-col items-center justify-center pt-24 text-center">
+    <p class="eyebrow">404</p>
+    <h1 class="mt-4 text-5xl">Diese Seite gibt es leider nicht</h1>
+    <p class="mt-4 text-ink-soft">Vielleicht findet ihr auf der Startseite, was ihr sucht.</p>
+    <a href="/" class="btn-primary mt-8">Zur Startseite</a>
   </section>
 </Layout>

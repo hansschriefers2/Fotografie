@@ -1,26 +1,57 @@
 ---
+import { Image } from "astro:assets";
 import Layout from "../layouts/Layout.astro";
+import PageHeader from "../components/PageHeader.astro";
+import { photos } from "../data/fotos";
 import { pixieset } from "../config";
+
+const vorteile = [
+  "Lieblingsbilder markieren",
+  "Bilder in voller Auflösung herunterladen",
+  "Galerie mit Familie und Freunden teilen",
+  "Abzüge und Fotobücher direkt bestellen",
+];
 ---
 
-<Layout title="Kundengalerie" description="Zugang zu eurer privaten Online-Galerie.">
-  <section class="seite schmal">
-    <h1>Kundengalerie</h1>
-    <p>
-      Eure Bilder liegen in einer privaten, passwortgeschützten Galerie bei Pixieset. Dort könnt ihr Favoriten markieren,
-      Bilder herunterladen, mit der Familie teilen und Abzüge oder Fotobücher bestellen.
-    </p>
-    <p>Den direkten Link und das Passwort bekommt ihr nach dem Shooting per E-Mail.</p>
-    {
-      pixieset.galerieUrl ? (
-        <p>
-          <a class="knopf knopf-voll" href={pixieset.galerieUrl} target="_blank" rel="noopener">
+<Layout title="Kundengalerie" description="Zugang zu eurer privaten Online-Galerie." noindex>
+  <PageHeader
+    eyebrow="Kundengalerie"
+    title="Eure Bilder"
+    intro="Eure Bilder liegen in einer privaten, passwortgeschützten Online-Galerie. Den direkten Link und das Passwort bekommt ihr nach dem Shooting per E-Mail."
+  />
+  <section class="container-page grid items-center gap-14 py-16 sm:py-24 lg:grid-cols-2 lg:gap-20">
+    <div>
+      <h2 class="text-4xl">In eurer Galerie könnt ihr …</h2>
+      <ul class="mt-8 space-y-4">
+        {
+          vorteile.map((v) => (
+            <li class="flex gap-4 border-b border-ink/10 pb-4 leading-relaxed text-ink-soft">
+              <span aria-hidden="true" class="text-rose-deep">
+                ✓
+              </span>
+              {v}
+            </li>
+          ))
+        }
+      </ul>
+      {
+        pixieset.galerieUrl ? (
+          <a class="btn-primary mt-10" href={pixieset.galerieUrl} target="_blank" rel="noopener">
             Zu den Galerien
           </a>
-        </p>
-      ) : (
-        <p class="hinweis">Der Galerie-Link wird hier ergänzt, sobald er eingerichtet ist.</p>
-      )
-    }
+        ) : (
+          <p class="mt-10 text-ink-soft">Der Galerie-Link wird hier ergänzt, sobald er eingerichtet ist.</p>
+        )
+      }
+    </div>
+    <div class="relative aspect-[4/3] overflow-hidden rounded-[2rem]">
+      <Image
+        src={photos.familie05.src}
+        alt={photos.familie05.alt}
+        widths={[600, 1000]}
+        sizes="(min-width: 1024px) 45vw, 100vw"
+        class="absolute inset-0 h-full w-full bg-sand object-cover"
+      />
+    </div>
   </section>
 </Layout>

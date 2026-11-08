@@ -1,0 +1,150 @@
+---
+import { Image, getImage } from "astro:assets";
+import { categories, type Photo } from "../data/fotos";
+
+interface Props {
+  photos: Photo[];
+}
+const { photos } = Astro.props;
+
+// Große Version für die Vollbild-Ansicht
+const gross = await Promise.all(photos.map((p) => getImage({ src: p.src, width: 2000, format: "webp", quality: 85 })));
+const filter = [{ id: "alle", label: "Alle" }, ...categories];
+---
+
+<div data-gallery>
+  <div role="group" aria-label="Kategorie filtern" class="flex flex-wrap gap-2">
+    {
+      filter.map((c) => (
+        <button
+          type="button"
+          data-filter={c.id}
+          aria-pressed={c.id === "alle" ? "true" : "false"}
+          class="rounded-full border border-ink/20 px-5 py-2.5 text-sm font-medium text-ink transition-colors hover:border-ink aria-pressed:border-ink aria-pressed:bg-ink aria-pressed:text-cream"
+        >
+          {c.label}
+        </button>
+      ))
+    }
+  </div>
+
+  <ul class="mt-10 columns-1 gap-4 sm:columns-2 lg:columns-3 [&>li]:mb-4">
+    {
+      photos.map((p, i) => (
+        <li data-category={p.category} class="break-inside-avoid">
+          <button
+            type="button"
+            data-open
+            data-full={gross[i].src}
+            data-alt={p.alt}
+            class="group block w-full overflow-hidden rounded-2xl"
+            aria-label={`${p.alt} – vergrößern`}
+          >
+            <Image
+              src={p.src}
+              alt={p.alt}
+              widths={[480, 800, 1200]}
+              sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+              loading="lazy"
+              class="h-auto w-full bg-sand transition-transform duration-700 group-hover:scale-[1.03]"
+            />
+          </button>
+        </li>
+      ))
+    }
+  </ul>
+
+  <dialog
+    data-lightbox
+    aria-label="Fotoansicht"
+    class="m-0 h-dvh max-h-none w-screen max-w-none bg-ink/95 p-0 text-cream backdrop:bg-ink/80"
+  >
+    <div data-backdrop class="relative flex h-full w-full items-center justify-center p-4 sm:p-14">
+      <img data-image alt="" class="max-h-[calc(100dvh-7rem)] w-auto max-w-full rounded-lg object-contain" />
+      <p data-counter class="absolute bottom-5 left-1/2 -translate-x-1/2 text-xs tracking-widest text-cream/70"></p>
+    </div>
+    <button
+      type="button"
+      data-close
+      aria-label="Schließen"
+      class="absolute top-4 right-4 flex h-11 w-11 items-center justify-center rounded-full text-2xl hover:bg-cream/10"
+    >
+      ×
+    </button>
+    <button
+      type="button"
+      data-prev
+      aria-label="Vorheriges Foto"
+      class="absolute top-1/2 left-2 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full text-3xl hover:bg-cream/10 sm:flex"
+    >
+      ‹
+    </button>
+    <button
+      type="button"
+      data-next
+      aria-label="Nächstes Foto"
+      class="absolute top-1/2 right-2 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full text-3xl hover:bg-cream/10 sm:flex"
+    >
+      ›
+    </button>
+  </dialog>
+</div>
+
+<script>
+  const root = document.querySelector<HTMLElement>("[data-gallery]");
+  if (root) {
+    const items = [...root.querySelectorAll<HTMLLIElement>("li[data-category]")];
+    const filterButtons = [...root.querySelectorAll<HTMLButtonElement>("[data-filter]")];
+    const dialog = root.querySelector<HTMLDialogElement>("[data-lightbox]")!;
+    const image = dialog.querySelector<HTMLImageElement>("[data-image]")!;
+    const counter = dialog.querySelector<HTMLElement>("[data-counter]")!;
+    let visible = items;
+    let index = 0;
+
+    const show = (i: number) => {
+      index = (i + visible.length) % visible.length;
+      const btn = visible[index].querySelector<HTMLButtonElement>("[data-open]")!;
+      image.src = btn.dataset.full ?? "";
+      image.alt = btn.dataset.alt ?? "";
+      counter.textContent = `${index + 1} / ${visible.length}`;
+    };
+
+    filterButtons.forEach((b) =>
+      b.addEventListener("click", () => {
+        const f = b.dataset.filter;
+        filterButtons.forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+        items.forEach((li) => (li.hidden = f !== "alle" && li.dataset.category !== f));
+        visible = items.filter((li) => !li.hidden);
+      }),
+    );
+
+    items.forEach((li) =>
+      li.querySelector("[data-open]")!.addEventListener("click", () => {
+        show(visible.indexOf(li));
+        dialog.showModal();
+      }),
+    );
+
+    dialog.querySelector("[data-close]")!.addEventListener("click", () => dialog.close());
+    dialog.querySelector("[data-prev]")!.addEventListener("click", () => show(index - 1));
+    dialog.querySelector("[data-next]")!.addEventListener("click", () => show(index + 1));
+    // Klick neben das Bild schließt
+    dialog.querySelector("[data-backdrop]")!.addEventListener("click", (e) => {
+      if (e.target !== image) dialog.close();
+    });
+    dialog.addEventListener("close", () => image.removeAttribute("src"));
+    dialog.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight") show(index + 1);
+      if (e.key === "ArrowLeft") show(index - 1);
+    });
+
+    let touchX: number | null = null;
+    dialog.addEventListener("touchstart", (e) => (touchX = e.touches[0].clientX), { passive: true });
+    dialog.addEventListener("touchend", (e) => {
+      if (touchX === null) return;
+      const dx = e.changedTouches[0].clientX - touchX;
+      if (Math.abs(dx) > 50) show(index + (dx < 0 ? 1 : -1));
+      touchX = null;
+    });
+  }
+</script>

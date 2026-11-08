@@ -1,14 +1,23 @@
 // @ts-check
 import { defineConfig } from "astro/config";
+import tailwindcss from "@tailwindcss/vite";
 
 // https://docs.astro.build/en/reference/configuration-reference/
 export default defineConfig({
-  // Deine IONOS-Domain eintragen (wichtig für Sitemap, Canonical-Links und Social-Vorschauen)
-  site: "https://www.deine-domain.de",
+  // Deine Domain (wichtig für Canonical-Links und Social-Vorschauen)
+  site: "https://schriefers-fotografie.de",
   // Rein statische Seite: `npm run build` erzeugt den Ordner `dist/`,
-  // der 1:1 auf IONOS (Deploy Now oder Webspace) hochgeladen wird.
+  // der 1:1 auf IONOS (Webspace oder Deploy Now) hochgeladen wird.
   output: "static",
   build: {
-    format: "directory", // /pakete/ -> dist/pakete/index.html (funktioniert auf Apache ohne Umschreibregeln)
+    format: "directory", // /preise/ -> dist/preise/index.html (funktioniert auf Apache ohne Umschreibregeln)
+  },
+  // Alte Adressen weiterleiten
+  redirects: {
+    "/portfolio": "/galerie/",
+    "/pakete": "/preise/",
+  },
+  vite: {
+    plugins: [tailwindcss()],
   },
 });

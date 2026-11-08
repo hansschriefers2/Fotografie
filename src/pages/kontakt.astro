@@ -1,30 +1,96 @@
 ---
+import { Image } from "astro:assets";
 import Layout from "../layouts/Layout.astro";
+import PageHeader from "../components/PageHeader.astro";
 import PixiesetEmbed from "../components/PixiesetEmbed.astro";
-import { studio, pixieset } from "../config";
+import { photos } from "../data/fotos";
+import { pixieset, site, telHref } from "../config";
 
-const telHref = `tel:${studio.telefon.replace(/[^+\d]/g, "")}`;
+// Die Seite ist rein statisch (IONOS-Webspace). Anfragen laufen daher über das
+// Pixieset-Kontaktformular – oder, solange keins eingerichtet ist, per E-Mail.
+const tipps = [
+  "Wer ist dabei? (Namen und Alter der Kinder)",
+  "Welches Shooting interessiert euch?",
+  "Wunschtermin bzw. errechneter Geburtstermin",
+  "Draußen oder bei euch zu Hause?",
+];
+const betreff = "Anfrage Fotoshooting";
+const text = `Hallo ${site.firstName},\n\n${tipps.map((t) => `${t}\n\n`).join("")}Viele Grüße`;
+const mailHref = `mailto:${site.email}?subject=${encodeURIComponent(betreff)}&body=${encodeURIComponent(text)}`;
 ---
 
-<Layout title="Kontakt" description="Fragen oder Wunschtermin? Schreibt mir.">
-  <section class="seite schmal">
-    <h1>Kontakt</h1>
-    <p>Erzählt mir kurz, wer zu eurer Familie gehört, welches Paket euch interessiert und wann ihr Zeit habt.</p>
-    <p>
-      E-Mail: <a href={`mailto:${studio.email}`}>{studio.email}</a><br />
-      Telefon: <a href={telHref}>{studio.telefon}</a>
-    </p>
-
+<Layout title="Kontakt" description="Fragt euer Baby-, Familien- oder Babybauchshooting unverbindlich an.">
+  <PageHeader
+    eyebrow="Kontakt"
+    title="Schön, dass ihr da seid"
+    intro="Erzählt mir von euch und euren Wünschen. Ich melde mich innerhalb von 48 Stunden mit freien Terminen und allen Infos."
+  />
+  <section class="container-page grid gap-16 py-16 sm:py-24 lg:grid-cols-[1fr_22rem]">
     {
       pixieset.kontaktformularUrl ? (
         <PixiesetEmbed url={pixieset.kontaktformularUrl} titel="Kontaktformular" />
       ) : (
-        <p>
-          <a class="knopf knopf-voll" href={`mailto:${studio.email}?subject=${encodeURIComponent("Anfrage Familienshooting")}`}>
-            E-Mail schreiben
-          </a>
-        </p>
+        <div class="rounded-[1.75rem] bg-linen p-8 sm:p-12">
+          <p class="eyebrow" data-paket-hinweis hidden />
+          <h2 class="mt-3 text-4xl">Schreibt mir eine Nachricht</h2>
+          <p class="mt-4 max-w-lg leading-relaxed text-ink-soft">
+            Am schnellsten geht es per E-Mail. Damit ich euch gleich passende Termine nennen kann, erzählt mir gern:
+          </p>
+          <ul class="mt-8 space-y-4">
+            {tipps.map((t) => (
+              <li class="flex gap-4 border-b border-ink/10 pb-4 leading-relaxed text-ink-soft">
+                <span aria-hidden="true" class="text-rose-deep">
+                  ✓
+                </span>
+                {t}
+              </li>
+            ))}
+          </ul>
+          <div class="mt-10 flex flex-col gap-3 sm:flex-row">
+            <a href={mailHref} data-mail data-betreff={betreff} class="btn-primary">
+              E-Mail schreiben
+            </a>
+            <a href={telHref} class="btn-ghost">
+              Anrufen
+            </a>
+          </div>
+        </div>
       )
     }
+
+    <aside class="space-y-8">
+      <div class="relative hidden aspect-[3/4] overflow-hidden rounded-t-full lg:block">
+        <Image
+          src={photos.baby04.src}
+          alt={photos.baby04.alt}
+          widths={[352, 704]}
+          sizes="352px"
+          class="absolute inset-0 h-full w-full bg-sand object-cover"
+        />
+      </div>
+      <div>
+        <h2 class="eyebrow font-sans">Direkt erreichen</h2>
+        <ul class="mt-4 space-y-3 text-ink-soft">
+          <li><a href={`mailto:${site.email}`} class="break-all hover:text-ink">{site.email}</a></li>
+          <li><a href={telHref} class="hover:text-ink">{site.phone}</a></li>
+          <li>{site.region}</li>
+        </ul>
+      </div>
+    </aside>
   </section>
 </Layout>
+
+<script>
+  // Von der Preisseite kommend (?paket=Newborn) den Betreff der E-Mail ergänzen
+  const paket = new URLSearchParams(location.search).get("paket")?.slice(0, 60);
+  const link = document.querySelector<HTMLAnchorElement>("[data-mail]");
+  const hinweis = document.querySelector<HTMLElement>("[data-paket-hinweis]");
+  if (paket && link) {
+    const betreff = `${link.dataset.betreff}: ${paket}`;
+    link.href = link.href.replace(/subject=[^&]*/, `subject=${encodeURIComponent(betreff)}`);
+    if (hinweis) {
+      hinweis.textContent = `Paket: ${paket}`;
+      hinweis.hidden = false;
+    }
+  }
+</script>

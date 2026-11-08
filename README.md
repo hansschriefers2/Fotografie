@@ -1,6 +1,6 @@
-# Fotografie – Familienfotografie-Website
+# Schriefers Fotografie – Website
 
-Statische Website mit [Astro](https://astro.build), Kundengalerien/Buchung über **Pixieset**, Hosting bei **IONOS**.
+Statische Website mit [Astro](https://astro.build) und Tailwind CSS, Kundengalerien/Buchung über **Pixieset**, Hosting bei **IONOS**.
 
 ## Lokal starten
 
@@ -15,19 +15,31 @@ npm run preview  # gebaute Seite lokal ansehen
 
 | Datei | Inhalt |
 | --- | --- |
-| `src/config.ts` | Studio-Name, E-Mail, Telefon, Region, **Pixieset-Links** |
-| `src/data/pakete.ts` | Pakete, Preise, FAQ |
-| `src/data/fotos.ts` + `src/assets/fotos/` | Portfolio-Bilder (aktuell Platzhalter) |
-| `src/pages/impressum.astro`, `datenschutz.astro` | Rechtstexte (Pflicht!) |
+| `src/config.ts` | Name, Adresse, E-Mail, Telefon, Region, **Pixieset-Links** |
+| `src/data/preise.ts` | Pakete, Preise, Extras, FAQ |
+| `src/data/fotos.ts` + `src/assets/{baby,familie,schwangerschaft}/` | Bilder, Alt-Texte, Slideshow-Auswahl |
+| `src/styles/global.css` (`@theme`) | Farben & Schriften |
+| `src/pages/ueber-mich.astro` | Text über dich, Porträtfoto |
+| `src/pages/impressum.astro`, `datenschutz.astro`, `agb.astro` | Rechtstexte (Pflicht!) |
 | `astro.config.mjs` | `site:` auf deine Domain setzen |
+
+### Neue Bilder hinzufügen
+
+Originale nie direkt einbinden – erst verkleinern (entfernt auch EXIF/GPS-Daten!):
+
+```bash
+node scripts/optimize-images.mjs ~/Downloads/NeuerOrdner src/assets/familie
+```
+
+Danach in `src/data/fotos.ts` importieren und mit Alt-Text versehen. Beim Build erzeugt Astro automatisch passende WebP-Größen.
 
 ### Pixieset verbinden
 
 In `src/config.ts`:
 
-- `galerieUrl` – Startseite deiner Client Galleries → Button auf `/galerie/`
+- `galerieUrl` – Startseite deiner Client Galleries → Button auf `/kundengalerie/`
 - `buchungUrl` – öffentlicher Buchungslink aus dem Studio Manager → aktiviert `/buchen/` und alle „Anfragen“-Buttons
-- `kontaktformularUrl` – öffentlicher Link deines Kontaktformulars → wird auf `/kontakt/` eingebettet
+- `kontaktformularUrl` – öffentlicher Link deines Kontaktformulars → wird auf `/kontakt/` eingebettet (ohne Link: E-Mail-Button mit Vorlage)
 
 Leere Werte blenden die Funktion aus (dann wird auf E-Mail/Kontakt verwiesen).
 Eingebettete Pixieset-Formulare laden erst nach einem Klick (Zwei-Klick-Lösung, DSGVO-freundlich). Die Seite selbst setzt keine Cookies und lädt keine externen Schriften.
@@ -56,10 +68,13 @@ Eingebettete Pixieset-Formulare laden erst nach einem Klick (Zwei-Klick-Lösung,
 ```
 src/
   config.ts            Zentrale Einstellungen
-  data/                Fotos, Pakete, FAQ
-  assets/fotos/        Bilder (werden beim Build optimiert)
-  components/          Galerie, Pixieset-Einbettung
-  layouts/Layout.astro Kopf, Navigation, Fuß
-  pages/               Start, Portfolio, Pakete, Buchen, Galerie, Kontakt, Impressum, Datenschutz, 404
-public/                Favicon, .htaccess (wird unverändert kopiert)
+  data/                Fotos, Preise, FAQ
+  assets/              Bilder (werden beim Build optimiert)
+  components/          Header, Footer, Slideshow, Galerie mit Lightbox, Pixieset-Einbettung
+  layouts/Layout.astro Grundgerüst jeder Seite
+  styles/global.css    Tailwind, Farben, Schriften (lokal, ohne Google-Verbindung)
+  pages/               Start, Galerie, Über mich, Preise, Kontakt, Buchen, Kundengalerie,
+                       Impressum, Datenschutz, AGB, 404
+public/                Favicon, Social-Vorschaubild, .htaccess (wird unverändert kopiert)
+scripts/               optimize-images.mjs
 ```

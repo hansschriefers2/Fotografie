@@ -1,44 +1,168 @@
 ---
 import { Image } from "astro:assets";
 import Layout from "../layouts/Layout.astro";
-import Galerie from "../components/Galerie.astro";
-import { studio, pixieset } from "../config";
-import { fotos, heroBild } from "../data/fotos";
+import HeroSlideshow from "../components/HeroSlideshow.astro";
+import SectionHeading from "../components/SectionHeading.astro";
+import { heroSlides, photos } from "../data/fotos";
+import { anfrageHref } from "../config";
 
-const buchenHref = pixieset.buchungUrl ? "/buchen/" : "/kontakt/";
+const services = [
+  {
+    title: "Baby & Newborn",
+    text: "Die ersten Tage vergehen so schnell. Winzige Finger, zarte Füße, der erste Schlaf – in Ruhe und ganz ohne Stress, gern bei euch zu Hause.",
+    photo: photos.baby09,
+  },
+  {
+    title: "Familie",
+    text: "Draußen in der Natur, mit Lachen, Toben und Händchenhalten. Echte Momente statt steifer Posen – so, wie ihr wirklich seid.",
+    photo: photos.familie11,
+  },
+  {
+    title: "Babybauch",
+    text: "Die Vorfreude festhalten. Ruhige, elegante Bilder einer ganz besonderen Zeit – auf Wunsch auch in zeitlosem Schwarz-Weiß.",
+    photo: photos.schwangerschaft01,
+  },
+];
+
+const steps = [
+  {
+    n: "01",
+    title: "Kennenlernen",
+    text: "Ihr meldet euch, wir sprechen in Ruhe über eure Wünsche, den passenden Ort und den idealen Zeitpunkt.",
+  },
+  {
+    n: "02",
+    title: "Das Shooting",
+    text: "Entspannt, ohne Zeitdruck und mit viel Geduld. Pausen fürs Stillen, Kuscheln oder Spielen sind immer eingeplant.",
+  },
+  {
+    n: "03",
+    title: "Eure Bilder",
+    text: "Nach etwa zwei Wochen erhaltet ihr eure liebevoll bearbeiteten Bilder in einer privaten Online-Galerie.",
+  },
+];
+
+const streifen = [photos.baby02, photos.familie08, photos.baby13, photos.familie06];
 ---
 
 <Layout>
-  <section class="hero">
-    <Image src={heroBild} alt="Familie im Abendlicht" widths={[800, 1600, 2400]} sizes="100vw" loading="eager" fetchpriority="high" />
-    <div class="hero-text">
-      <h1>{studio.claim}</h1>
-      <div class="knopf-reihe">
-        <a href={buchenHref} class="knopf knopf-voll">Shooting anfragen</a>
-        <a href="/pakete/" class="knopf">Pakete ansehen</a>
+  <HeroSlideshow slides={heroSlides} />
+
+  <!-- Philosophie -->
+  <section class="py-24 sm:py-32">
+    <div class="container-page grid items-center gap-14 lg:grid-cols-2 lg:gap-20">
+      <div class="relative">
+        <div class="relative aspect-[4/5] overflow-hidden rounded-[2rem]">
+          <Image
+            src={photos.familie14.src}
+            alt={photos.familie14.alt}
+            widths={[600, 900, 1200]}
+            sizes="(min-width: 1024px) 40vw, 100vw"
+            class="absolute inset-0 h-full w-full bg-sand object-cover"
+          />
+        </div>
+        <div
+          class="absolute -right-4 -bottom-8 hidden w-44 overflow-hidden rounded-2xl border-8 border-cream shadow-xl sm:block lg:-right-10 lg:w-56"
+        >
+          <Image src={photos.baby14.src} alt={photos.baby14.alt} widths={[224, 448]} sizes="224px" class="h-auto w-full" />
+        </div>
+      </div>
+
+      <div>
+        <SectionHeading eyebrow="Willkommen">
+          <Fragment slot="title">Bilder für <em class="font-light">später</em> – für das Gefühl von heute.</Fragment>
+          <p>
+            Irgendwann sind die Hände größer, die Schritte sicherer und die Babytage nur noch eine Erinnerung. Genau dafür
+            fotografiere ich: damit ihr in vielen Jahren eure Bilder anschaut und sofort wieder spürt, wie es sich angefühlt
+            hat.
+          </p>
+          <p class="mt-4">
+            Mein Stil ist natürlich, warm und unaufgeregt. Keine künstlichen Kulissen, keine Trends, die schnell veralten –
+            sondern zeitlose Bilder, die mit euch mitwachsen.
+          </p>
+        </SectionHeading>
+        <div class="mt-9 flex flex-col gap-3 sm:flex-row">
+          <a href="/ueber-mich/" class="btn-primary">Mehr über mich</a>
+          <a href="/preise/" class="btn-ghost">Pakete & Preise</a>
+        </div>
       </div>
     </div>
   </section>
 
-  <section class="seite schmal zentriert">
-    <h2>Hallo, schön dass ihr da seid!</h2>
-    <p class="untertitel">{studio.beschreibung}</p>
-    <p>Hier steht später ein kurzer, persönlicher Text über dich: wer du bist, wie ein Shooting mit dir abläuft und warum Familien sich bei dir wohlfühlen.</p>
+  <!-- Leistungen -->
+  <section class="bg-linen py-24 sm:py-32">
+    <div class="container-page">
+      <SectionHeading eyebrow="Shootings" title="Was ich für euch festhalte" center />
+      <div class="mt-16 grid gap-10 md:grid-cols-3 md:gap-8">
+        {
+          services.map((s) => (
+            <article class="group">
+              <div class="relative aspect-[4/5] overflow-hidden rounded-t-full">
+                <Image
+                  src={s.photo.src}
+                  alt={s.photo.alt}
+                  widths={[500, 800, 1100]}
+                  sizes="(min-width: 768px) 33vw, 100vw"
+                  class="absolute inset-0 h-full w-full bg-sand object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+              </div>
+              <h3 class="mt-7 text-3xl">{s.title}</h3>
+              <p class="mt-3 leading-relaxed text-ink-soft">{s.text}</p>
+            </article>
+          ))
+        }
+      </div>
+    </div>
   </section>
 
-  <section class="seite">
-    <h2>So läuft ein Shooting ab</h2>
-    <ol class="schritte">
-      <li><h3>Anfragen</h3><p>Ihr wählt ein Paket und einen Wunschtermin.</p></li>
-      <li><h3>Kennenlernen</h3><p>Kurzes Gespräch zu Ort, Kleidung und Wünschen.</p></li>
-      <li><h3>Shooting</h3><p>Ganz entspannt – Kinder dürfen Kinder sein.</p></li>
-      <li><h3>Galerie</h3><p>Eure Bilder kommen in eure private Online-Galerie.</p></li>
-    </ol>
+  <!-- Ablauf -->
+  <section class="py-24 sm:py-32">
+    <div class="container-page">
+      <SectionHeading eyebrow="So läuft's ab" title="Entspannt von Anfang an" />
+      <ol class="mt-14 grid gap-10 md:grid-cols-3">
+        {
+          steps.map((s) => (
+            <li class="border-t border-ink/15 pt-6">
+              <span class="font-serif text-5xl text-rose">{s.n}</span>
+              <h3 class="mt-3 text-2xl">{s.title}</h3>
+              <p class="mt-3 leading-relaxed text-ink-soft">{s.text}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
   </section>
 
-  <section class="seite">
-    <h2>Einblicke</h2>
-    <Galerie fotos={fotos.slice(0, 3)} />
-    <p><a href="/portfolio/" class="knopf">Ganzes Portfolio</a></p>
+  <!-- Bildstreifen -->
+  <section aria-label="Einblicke" class="grid grid-cols-2 gap-1 sm:grid-cols-4">
+    {
+      streifen.map((p) => (
+        <div class="relative aspect-square overflow-hidden">
+          <Image
+            src={p.src}
+            alt={p.alt}
+            widths={[400, 700, 1000]}
+            sizes="(min-width: 640px) 25vw, 50vw"
+            class="absolute inset-0 h-full w-full bg-sand object-cover"
+          />
+        </div>
+      ))
+    }
+  </section>
+
+  <!-- CTA -->
+  <section class="bg-sand/60 py-24 sm:py-32">
+    <div class="container-page text-center">
+      <p class="eyebrow">Termine</p>
+      <h2 class="mx-auto mt-4 max-w-2xl text-4xl sm:text-5xl">Lasst uns eure Geschichte gemeinsam festhalten.</h2>
+      <p class="mx-auto mt-5 max-w-xl leading-relaxed text-ink-soft">
+        Für Newborn-Shootings meldet euch am besten schon während der Schwangerschaft – die schönste Zeit dafür sind die
+        ersten 14 Lebenstage.
+      </p>
+      <div class="mt-9 flex flex-col justify-center gap-3 sm:flex-row">
+        <a href={anfrageHref} class="btn-primary">Unverbindlich anfragen</a>
+        <a href="/galerie/" class="btn-ghost">Mehr Bilder ansehen</a>
+      </div>
+    </div>
   </section>
 </Layout>

@@ -1,22 +1,29 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import PageHeader from "../components/PageHeader.astro";
 import PixiesetEmbed from "../components/PixiesetEmbed.astro";
 import { pixieset } from "../config";
 ---
 
-<Layout title="Shooting buchen" description="Wunschtermin für euer Familien-Shooting direkt online buchen.">
-  <section class="seite schmal">
-    <h1>Shooting buchen</h1>
+<Layout title="Shooting buchen" description="Wunschtermin für euer Shooting direkt online buchen.">
+  <PageHeader
+    eyebrow="Termine"
+    title="Shooting buchen"
+    intro="Wählt euer Paket und einen freien Termin – ihr bekommt sofort eine Bestätigung per E-Mail."
+  />
+  <section class="container-page py-16 sm:py-24">
     {
       pixieset.buchungUrl ? (
-        <>
-          <p>Wählt euer Paket und einen freien Termin – ihr bekommt sofort eine Bestätigung per E-Mail.</p>
-          <PixiesetEmbed url={pixieset.buchungUrl} titel="Online-Buchung" hoehe={1100} />
-        </>
+        <PixiesetEmbed url={pixieset.buchungUrl} titel="Online-Buchung" hoehe={1100} />
       ) : (
-        <p class="hinweis">
-          Die Online-Buchung ist noch nicht eingerichtet. Schreibt mir gern über die <a href="/kontakt/">Kontaktseite</a>.
-        </p>
+        <div class="rounded-[1.75rem] bg-linen p-8 sm:p-12">
+          <p class="max-w-lg leading-relaxed text-ink-soft">
+            Die Online-Buchung ist noch nicht eingerichtet. Schreibt mir gern – ich melde mich mit freien Terminen.
+          </p>
+          <a href="/kontakt/" class="btn-primary mt-8">
+            Zur Kontaktseite
+          </a>
+        </div>
       )
     }
   </section>

@@ -11,15 +11,22 @@ interface Props {
 const { url, titel, hoehe = 900 } = Astro.props;
 ---
 
-<div class="embed" data-pixieset-embed data-src={url} data-titel={titel} style={`--hoehe: ${hoehe}px`}>
-  <div class="embed-hinweis">
-    <p>
-      Das Formular wird von <strong>Pixieset</strong> bereitgestellt. Beim Laden werden Daten an Pixieset übertragen
-      (siehe <a href="/datenschutz/">Datenschutzerklärung</a>).
+<div
+  class="overflow-hidden rounded-[1.75rem] bg-linen"
+  data-pixieset-embed
+  data-src={url}
+  data-titel={titel}
+  style={`--hoehe: ${hoehe}px`}
+>
+  <div class="p-8 sm:p-10">
+    <p class="font-serif text-3xl">{titel}</p>
+    <p class="mt-4 max-w-lg leading-relaxed text-ink-soft">
+      Das Formular wird von <strong class="text-ink">Pixieset</strong> bereitgestellt. Beim Laden werden Daten an Pixieset
+      übertragen (siehe <a href="/datenschutz/" class="text-rose-deep underline underline-offset-2">Datenschutzerklärung</a>).
     </p>
-    <div class="knopf-reihe">
-      <button type="button" class="knopf knopf-voll" data-laden>Formular laden</button>
-      <a class="knopf" href={url} target="_blank" rel="noopener">In neuem Tab öffnen</a>
+    <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+      <button type="button" class="btn-primary" data-laden>Formular laden</button>
+      <a class="btn-ghost" href={url} target="_blank" rel="noopener">In neuem Tab öffnen</a>
     </div>
   </div>
 </div>
@@ -30,7 +37,8 @@ const { url, titel, hoehe = 900 } = Astro.props;
       const iframe = document.createElement("iframe");
       iframe.src = box.dataset.src ?? "";
       iframe.title = box.dataset.titel ?? "Pixieset";
-      iframe.loading = "lazy";
+      iframe.className = "block w-full border-0 bg-white";
+      iframe.style.height = "var(--hoehe, 900px)";
       box.replaceChildren(iframe);
     });
   });

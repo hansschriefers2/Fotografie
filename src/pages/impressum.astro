@@ -1,0 +1,30 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { studio } from "../config";
+---
+
+<Layout title="Impressum">
+  <section class="seite schmal">
+    <h1>Impressum</h1>
+    <p class="hinweis">
+      Vorlage – bitte vollständig mit deinen echten Angaben ausfüllen (Pflicht nach § 5 DDG). Im Zweifel einen
+      Impressum-Generator oder eine Rechtsberatung nutzen.
+    </p>
+    <h2>Angaben zum Anbieter</h2>
+    <p>
+      Vorname Nachname<br />
+      {studio.name}<br />
+      Straße Hausnummer<br />
+      PLZ Ort
+    </p>
+    <h2>Kontakt</h2>
+    <p>
+      Telefon: {studio.telefon}<br />
+      E-Mail: {studio.email}
+    </p>
+    <h2>Umsatzsteuer</h2>
+    <p>USt-IdNr. gemäß § 27a UStG: … (oder Hinweis auf Kleinunternehmerregelung)</p>
+    <h2>Verantwortlich für den Inhalt</h2>
+    <p>Vorname Nachname, Anschrift wie oben</p>
+  </section>
+</Layout>

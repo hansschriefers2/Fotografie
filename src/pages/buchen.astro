@@ -1,0 +1,23 @@
+---
+import Layout from "../layouts/Layout.astro";
+import PixiesetEmbed from "../components/PixiesetEmbed.astro";
+import { pixieset } from "../config";
+---
+
+<Layout title="Shooting buchen" description="Wunschtermin für euer Familien-Shooting direkt online buchen.">
+  <section class="seite schmal">
+    <h1>Shooting buchen</h1>
+    {
+      pixieset.buchungUrl ? (
+        <>
+          <p>Wählt euer Paket und einen freien Termin – ihr bekommt sofort eine Bestätigung per E-Mail.</p>
+          <PixiesetEmbed url={pixieset.buchungUrl} titel="Online-Buchung" hoehe={1100} />
+        </>
+      ) : (
+        <p class="hinweis">
+          Die Online-Buchung ist noch nicht eingerichtet. Schreibt mir gern über die <a href="/kontakt/">Kontaktseite</a>.
+        </p>
+      )
+    }
+  </section>
+</Layout>

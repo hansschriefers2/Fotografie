@@ -1,0 +1,26 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { pixieset } from "../config";
+---
+
+<Layout title="Kundengalerie" description="Zugang zu eurer privaten Online-Galerie.">
+  <section class="seite schmal">
+    <h1>Kundengalerie</h1>
+    <p>
+      Eure Bilder liegen in einer privaten, passwortgeschützten Galerie bei Pixieset. Dort könnt ihr Favoriten markieren,
+      Bilder herunterladen, mit der Familie teilen und Abzüge oder Fotobücher bestellen.
+    </p>
+    <p>Den direkten Link und das Passwort bekommt ihr nach dem Shooting per E-Mail.</p>
+    {
+      pixieset.galerieUrl ? (
+        <p>
+          <a class="knopf knopf-voll" href={pixieset.galerieUrl} target="_blank" rel="noopener">
+            Zu den Galerien
+          </a>
+        </p>
+      ) : (
+        <p class="hinweis">Der Galerie-Link wird hier ergänzt, sobald er eingerichtet ist.</p>
+      )
+    }
+  </section>
+</Layout>

@@ -1,0 +1,30 @@
+---
+import Layout from "../layouts/Layout.astro";
+import PixiesetEmbed from "../components/PixiesetEmbed.astro";
+import { studio, pixieset } from "../config";
+
+const telHref = `tel:${studio.telefon.replace(/[^+\d]/g, "")}`;
+---
+
+<Layout title="Kontakt" description="Fragen oder Wunschtermin? Schreibt mir.">
+  <section class="seite schmal">
+    <h1>Kontakt</h1>
+    <p>Erzählt mir kurz, wer zu eurer Familie gehört, welches Paket euch interessiert und wann ihr Zeit habt.</p>
+    <p>
+      E-Mail: <a href={`mailto:${studio.email}`}>{studio.email}</a><br />
+      Telefon: <a href={telHref}>{studio.telefon}</a>
+    </p>
+
+    {
+      pixieset.kontaktformularUrl ? (
+        <PixiesetEmbed url={pixieset.kontaktformularUrl} titel="Kontaktformular" />
+      ) : (
+        <p>
+          <a class="knopf knopf-voll" href={`mailto:${studio.email}?subject=${encodeURIComponent("Anfrage Familienshooting")}`}>
+            E-Mail schreiben
+          </a>
+        </p>
+      )
+    }
+  </section>
+</Layout>

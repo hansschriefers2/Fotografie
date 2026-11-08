@@ -1,0 +1,40 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { pixieset } from "../config";
+import { pakete, faq } from "../data/pakete";
+
+const buchenHref = pixieset.buchungUrl ? "/buchen/" : "/kontakt/";
+---
+
+<Layout title="Pakete & Preise" description="Familien-, Mini- und Neugeborenen-Shootings – Pakete und Preise im Überblick.">
+  <section class="seite">
+    <h1>Pakete & Preise</h1>
+    <p class="untertitel">Alle Preise inkl. Bildbearbeitung und privater Online-Galerie.</p>
+
+    <div class="pakete">
+      {
+        pakete.map((p) => (
+          <article class:list={["paket", { hervorheben: p.hervorheben }]}>
+            <h3>{p.name}</h3>
+            <p class="preis">{p.preis}</p>
+            <p class="dauer">{p.dauer}</p>
+            <ul>{p.leistungen.map((l) => <li>{l}</li>)}</ul>
+            <a href={buchenHref} class:list={["knopf", { "knopf-voll": p.hervorheben }]}>Anfragen</a>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="seite schmal">
+    <h2>Häufige Fragen</h2>
+    {
+      faq.map((f) => (
+        <details>
+          <summary>{f.frage}</summary>
+          <p>{f.antwort}</p>
+        </details>
+      ))
+    }
+  </section>
+</Layout>

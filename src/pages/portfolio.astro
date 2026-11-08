@@ -1,0 +1,12 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Galerie from "../components/Galerie.astro";
+import { fotos } from "../data/fotos";
+---
+
+<Layout title="Portfolio" description="Ausgewählte Familien-, Kinder- und Neugeborenenfotos.">
+  <section class="seite">
+    <h1>Portfolio</h1>
+    <Galerie fotos={fotos} />
+  </section>
+</Layout>

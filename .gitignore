@@ -1,8 +1,5 @@
 node_modules
-.next
-out
+dist
+.astro
 .env*
-next-env.d.ts
-*.tsbuildinfo
 .DS_Store
-.vercel

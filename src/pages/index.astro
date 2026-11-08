@@ -1,0 +1,44 @@
+---
+import { Image } from "astro:assets";
+import Layout from "../layouts/Layout.astro";
+import Galerie from "../components/Galerie.astro";
+import { studio, pixieset } from "../config";
+import { fotos, heroBild } from "../data/fotos";
+
+const buchenHref = pixieset.buchungUrl ? "/buchen/" : "/kontakt/";
+---
+
+<Layout>
+  <section class="hero">
+    <Image src={heroBild} alt="Familie im Abendlicht" widths={[800, 1600, 2400]} sizes="100vw" loading="eager" fetchpriority="high" />
+    <div class="hero-text">
+      <h1>{studio.claim}</h1>
+      <div class="knopf-reihe">
+        <a href={buchenHref} class="knopf knopf-voll">Shooting anfragen</a>
+        <a href="/pakete/" class="knopf">Pakete ansehen</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="seite schmal zentriert">
+    <h2>Hallo, schön dass ihr da seid!</h2>
+    <p class="untertitel">{studio.beschreibung}</p>
+    <p>Hier steht später ein kurzer, persönlicher Text über dich: wer du bist, wie ein Shooting mit dir abläuft und warum Familien sich bei dir wohlfühlen.</p>
+  </section>
+
+  <section class="seite">
+    <h2>So läuft ein Shooting ab</h2>
+    <ol class="schritte">
+      <li><h3>Anfragen</h3><p>Ihr wählt ein Paket und einen Wunschtermin.</p></li>
+      <li><h3>Kennenlernen</h3><p>Kurzes Gespräch zu Ort, Kleidung und Wünschen.</p></li>
+      <li><h3>Shooting</h3><p>Ganz entspannt – Kinder dürfen Kinder sein.</p></li>
+      <li><h3>Galerie</h3><p>Eure Bilder kommen in eure private Online-Galerie.</p></li>
+    </ol>
+  </section>
+
+  <section class="seite">
+    <h2>Einblicke</h2>
+    <Galerie fotos={fotos.slice(0, 3)} />
+    <p><a href="/portfolio/" class="knopf">Ganzes Portfolio</a></p>
+  </section>
+</Layout>

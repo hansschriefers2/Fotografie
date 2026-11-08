@@ -16,7 +16,7 @@ export const studio = {
 // Leere Werte ("") blenden die jeweilige Funktion automatisch aus bzw. zeigen einen Hinweis.
 export const pixieset = {
   // Startseite deiner Kundengalerien (Client Gallery → Einstellungen → Gallery Homepage)
-  galerieUrl: "https://deinname.pixieset.com",
+  galerieUrl: "https://schriefersfotografie.pixieset.com/",
   // Öffentlicher Buchungslink (Studio Manager → Booking → Session Type → Link teilen)
   buchungUrl: "",
   // Öffentlicher Link zu deinem Kontaktformular (Studio Manager → Contact Forms → Teilen)

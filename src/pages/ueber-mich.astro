@@ -1,47 +1,53 @@
 ---
 import { Image } from "astro:assets";
 import Layout from "../layouts/Layout.astro";
-import { photos } from "../data/fotos";
-import { site } from "../config";
+import { nicole } from "../data/fotos";
+import { site, whatsappAktiv, whatsappHref } from "../config";
+import WhatsappIcon from "../components/WhatsappIcon.astro";
+import Bewertungen from "../components/Bewertungen.astro";
+import unterschrift from "../assets/ich/unterschrift.png";
+import landSee from "../assets/landschaft/see.jpg";
+import landHirsch from "../assets/landschaft/hirsch.jpg";
+import landSterne from "../assets/landschaft/sterne.jpg";
 
-// TODO: Durch ein Porträt von dir ersetzen, z. B.:
-//   node scripts/optimize-images.mjs ~/Downloads/Portraet src/assets/ueber-mich
-//   import portrait from "../assets/ueber-mich/ueber-mich-01.jpg";
-const portrait = photos.familie04.src;
+// Fotos von Nicole: src/assets/ich/ (in src/data/fotos.ts unter „nicole“)
+const portrait = nicole.feld;
 
 const values = [
   {
     title: "Ruhe & Geduld",
-    text: "Babys und Kinder geben das Tempo vor. Wir nehmen uns Zeit fürs Kuscheln, Stillen und Spielen – die schönsten Bilder entstehen, wenn sich alle wohlfühlen.",
+    text: "Babys und Kinder geben das Tempo vor. Wir nehmen uns Zeit fürs Kuscheln und Spielen, denn wer sich wohlfühlt, zeigt sich so, wie er ist.",
   },
   {
     title: "Echt statt gestellt",
-    text: "Keine steifen Posen, keine künstlichen Kulissen. Ich halte fest, wie ihr wirklich seid: eure Blicke, eure Hände, eure kleinen Rituale.",
+    text: "Keine steifen Posen. Ich halte fest, wie ihr wirklich seid.",
   },
   {
     title: "Sicherheit & Vertrauen",
-    text: "Ihr sollt euch bei mir von Anfang an gut aufgehoben fühlen. Wir besprechen vorher alles in Ruhe, beim Shooting bestimmt ihr, was sich gut anfühlt – und eure Bilder zeige ich nur, wenn ihr es ausdrücklich erlaubt.",
+    text: "Bei Neugeborenen steht Sicherheit an erster Stelle: Euer Baby wird nur in natürlichen, bequemen Positionen fotografiert, nie in riskanten Posen, und wird immer von euch gehalten. Vor dem Shooting wasche ich mir gründlich die Hände, und wir sorgen gemeinsam für einen warmen Raum. Eure Bilder zeige ich nur, wenn ihr es ausdrücklich erlaubt.",
   },
 ];
 
-const erwartet = [
-  "Ein persönliches Vorgespräch, in dem wir alles in Ruhe planen",
-  "Einen kleinen Styling-Guide, damit ihr wisst, was gut aussieht",
-  "Ein Shooting ohne Zeitdruck – Pausen sind immer eingeplant",
-  "Liebevoll von Hand bearbeitete Bilder in einer privaten Online-Galerie",
-  "Kostenfreie Terminverschiebung, wenn euer Kind krank ist",
-];
+// Linien-Icons (Lucide, ISC-Lizenz) – Pfade für ein 24×24-Raster
+const icons = {
+  kamera: `<path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/>`,
+  baby: `<path d="M9 12h.01"/><path d="M15 12h.01"/><path d="M10 16c.5.3 1.2.5 2 .5s1.5-.2 2-.5"/><path d="M19 6.3a9 9 0 0 1 1.8 3.9 2 2 0 0 1 0 3.6 9 9 0 0 1-17.6 0 2 2 0 0 1 0-3.6A9 9 0 0 1 12 3c2 0 3.5 1.1 3.5 2.5s-.9 2.5-2 2.5c-.8 0-1.5-.4-1.5-1"/>`,
+  blende: `<circle cx="12" cy="12" r="10"/><path d="m14.31 8 5.74 9.94"/><path d="M9.69 8h11.48"/><path d="m7.38 12 5.74-9.94"/><path d="M9.69 16 3.95 6.06"/><path d="M14.31 16H2.83"/><path d="m16.62 12-5.74 9.94"/>`,
+  ort: `<path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/>`,
+};
 
-const zahlen = [
-  { wert: "20+", label: "Jahre hinter der Kamera" },
-  { wert: "2", label: "eigene Kinder" },
-  { wert: "35", label: "Jahre jung" },
+// Kleine Fakten unter dem Text – gern ergänzen oder austauschen
+const fakten = [
+  { icon: icons.kamera, text: "Über 20 Jahre Erfahrung hinter der Kamera" },
+  { icon: icons.blende, text: "Spezialisiert auf Newborn, Familie & Babybauch" },
+  { icon: icons.baby, text: "Meine jüngsten Models: wenige Tage alt" },
+  { icon: icons.ort, text: "Bei euch zu Hause oder draußen in der Natur" },
 ];
 ---
 
 <Layout
-  title="Über mich"
-  description={`Lernt die Fotografin hinter ${site.name} kennen – und warum mir zeitlose Familienerinnerungen so am Herzen liegen.`}
+  title="Fotografin"
+  description={`Lernt die Fotografin hinter ${site.name} kennen und erfahrt, warum mir zeitlose Familienerinnerungen so am Herzen liegen.`}
 >
   <!-- Intro -->
   <section class="bg-linen pt-32 pb-20 sm:pt-40 sm:pb-28">
@@ -49,12 +55,13 @@ const zahlen = [
       <div class="relative mx-auto w-full max-w-md lg:max-w-none">
         <div class="relative aspect-[4/5] overflow-hidden rounded-t-full">
           <Image
-            src={portrait}
-            alt={`Porträt von ${site.firstName}, Fotografin bei ${site.name}`}
+            src={portrait.src}
+            alt={portrait.alt}
             widths={[500, 800, 1100]}
             sizes="(min-width: 1024px) 40vw, 90vw"
             loading="eager"
             class="absolute inset-0 h-full w-full bg-sand object-cover"
+            style={{ objectPosition: portrait.fokus }}
           />
         </div>
         <div
@@ -65,43 +72,70 @@ const zahlen = [
       </div>
 
       <div>
-        <p class="eyebrow">Über mich</p>
+        <p class="eyebrow">Fotografin</p>
         <h1 class="mt-4 text-5xl sm:text-6xl">Hallo, ich bin <em class="font-light">{site.firstName}</em>.</h1>
         <div class="mt-7 space-y-4 text-lg leading-relaxed text-ink-soft">
           <p>
-            Ich bin 35, lebe mit meiner Familie in Wurmberg und bin in meiner freien Zeit am liebsten draußen im Garten.
-            Seit über 20 Jahren fotografiere ich – und heute halte ich am liebsten die Zeit fest, in der Familien wachsen:
-            vom Babybauch über die ersten Tage bis zum Großwerden.
+            Ich bin Familienfotografin aus Wurmberg. Rund um Pforzheim, Leonberg und den Enzkreis begleite ich Familien
+            vom Babybauch über die ersten Lebenstage bis zum Großwerden. Fotografiert habe ich schon immer,
+            lange vor allem auf Reisen, mit einem Blick für weite Landschaften, stille Morgen und besonderes Licht.
           </p>
           <p>
-            Kinder rennen, hüpfen, drehen sich im Kreis und kuscheln sich im nächsten Moment wieder an. Diese Bewegung,
-            dieses Lebendige möchte ich für euch festhalten – ehrlich, ungestellt und so, wie ihr wirklich seid. Damit ihr
-            eure Bilder in vielen Jahren anschaut und sofort wieder spürt, wie es sich angefühlt hat.
+            Mit meiner eigenen Familie hat sich dieser Blick verändert. Plötzlich waren es nicht mehr die großen
+            Aussichten, die mir wichtig waren, sondern die kleinen Momente zu Hause: winzige Finger, das erste Lachen,
+            zwei Kinder Hand in Hand. Ich weiß, wie schnell diese Zeit vergeht und wie viel jedes Bild davon später wert
+            ist. Genau diese Momente fotografiere ich heute für euch.
           </p>
+          <Image src={unterschrift} alt="Nicole Schriefers" width={600} class="mt-6 h-14 w-auto -rotate-2 opacity-85 sm:h-16" />
         </div>
-        <dl class="mt-10 grid grid-cols-3 gap-x-6 gap-y-6 border-t border-ink/10 pt-8 sm:max-w-lg sm:gap-x-10">
+        <ul class="mt-10 grid gap-x-8 gap-y-5 border-t border-ink/10 pt-8 sm:max-w-xl sm:grid-cols-2">
           {
-            zahlen.map((z) => (
-              <div class="flex flex-col">
-                <dt class="text-sm text-ink-soft">{z.label}</dt>
-                <dd class="order-first font-serif text-[2rem] text-ink sm:text-5xl">{z.wert}</dd>
-              </div>
+            fakten.map((f) => (
+              <li class="flex items-center gap-4">
+                <span
+                  aria-hidden="true"
+                  class="flex size-11 shrink-0 items-center justify-center rounded-full bg-cream text-rose-deep shadow-sm ring-1 ring-ink/5"
+                >
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="size-5"
+                    set:html={f.icon}
+                  />
+                </span>
+                <span class="leading-snug text-ink">{f.text}</span>
+              </li>
             ))
           }
-        </dl>
-        <p class="mt-8 font-serif text-3xl text-rose-deep italic">{site.firstName}</p>
+        </ul>
       </div>
     </div>
   </section>
 
-  <!-- Zitat -->
+  <!-- Zitat mit Bild (am Handy: Zitat oben, Bild darunter) -->
   <section class="py-24 sm:py-32">
-    <figure class="container-page mx-auto max-w-4xl text-center">
-      <span aria-hidden="true" class="block font-serif text-7xl leading-none text-rose">„</span>
-      <blockquote class="font-serif text-3xl leading-snug text-ink sm:text-4xl lg:text-5xl">
-        Die schönsten Bilder entstehen nicht, wenn alle stillhalten – sondern wenn das Leben einfach passiert.
-      </blockquote>
-    </figure>
+    <div class="container-page mx-auto grid max-w-5xl items-center gap-10 sm:grid-cols-[1fr_2fr] lg:gap-16">
+      <figure class="text-center sm:order-2 sm:text-left">
+        <span aria-hidden="true" class="block font-serif text-6xl leading-none text-rose">„</span>
+        <blockquote class="font-serif text-3xl leading-snug text-ink lg:text-4xl">
+          Die schönsten Bilder entstehen nicht, wenn alle stillhalten, sondern wenn das Leben einfach passiert.
+        </blockquote>
+      </figure>
+      <div class="relative mx-auto aspect-[3/4] w-full max-w-[15rem] overflow-hidden rounded-[1.5rem] sm:order-1 sm:max-w-[17rem]">
+        <Image
+          src={nicole.hockend.src}
+          alt={nicole.hockend.alt}
+          widths={[400, 700, 1000]}
+          sizes="(min-width: 1024px) 30vw, 50vw"
+          class="absolute inset-0 h-full w-full scale-[1.45] bg-sand object-cover"
+          style={{ objectPosition: nicole.hockend.fokus, transformOrigin: "40% 4%" }}
+        />
+      </div>
+    </div>
   </section>
 
   <!-- Werte -->
@@ -130,48 +164,124 @@ const zahlen = [
     <div class="container-page grid items-center gap-14 lg:grid-cols-2 lg:gap-20">
       <div class="order-2 lg:order-1">
         <p class="eyebrow">Mit mir an eurer Seite</p>
-        <h2 class="mt-4 text-4xl sm:text-5xl">Was euch erwartet</h2>
-        <ul class="mt-10 space-y-5">
-          {
-            erwartet.map((e) => (
-              <li class="flex gap-4 border-b border-ink/10 pb-5 leading-relaxed text-ink-soft">
-                <span aria-hidden="true" class="mt-0.5 text-rose-deep">
-                  ✓
-                </span>
-                {e}
-              </li>
-            ))
-          }
-        </ul>
+        <h2 class="mt-4 text-4xl sm:text-5xl">Was ich mitbringe</h2>
+        <div class="mt-8 space-y-4 text-lg leading-relaxed text-ink-soft">
+          <p>
+            Neben der Kamera vor allem Zeit und ein offenes Ohr. Ich sage euch, wo das Licht am schönsten ist, und halte mich zurück, sobald ihr ganz bei euch seid.
+          </p>
+          <p>Alles Organisatorische, vom Vorgespräch bis zur Online-Galerie, findet ihr übersichtlich bei den Preisen.</p>
+        </div>
+        <a href="/preise/" class="btn-ghost mt-8">Pakete & Preise</a>
       </div>
-      <div class="order-1 grid grid-cols-2 gap-4 lg:order-2">
-        {
-          [photos.baby08, photos.familie06].map((p, i) => (
-            <div class:list={["relative aspect-[3/4] overflow-hidden rounded-2xl", { "mt-12": i === 0 }]}>
-              <Image
-                src={p.src}
-                alt={p.alt}
-                widths={[400, 700]}
-                sizes="(min-width: 1024px) 25vw, 50vw"
-                class="absolute inset-0 h-full w-full bg-sand object-cover"
-              />
-            </div>
-          ))
-        }
+      <div class="relative order-1 mx-auto aspect-square w-full max-w-sm overflow-hidden rounded-full lg:order-2 lg:max-w-md">
+        <Image
+          src={nicole.portrait.src}
+          alt={nicole.portrait.alt}
+          widths={[500, 800, 1100]}
+          sizes="(min-width: 1024px) 40vw, 90vw"
+          class="absolute inset-0 h-full w-full scale-[1.4] bg-sand object-cover"
+          style={{ objectPosition: nicole.portrait.fokus, transformOrigin: "44% 52%" }}
+        />
       </div>
     </div>
   </section>
+
+  <!-- Mein Weg als Fotografin -->
+  <section class="bg-linen py-24 sm:py-32">
+    <div class="container-page grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
+      <div>
+        <p class="eyebrow">Mein Weg als Fotografin</p>
+        <h2 class="mt-4 text-4xl sm:text-5xl">Mit der Kamera unterwegs</h2>
+        <div class="mt-6 space-y-4 text-lg leading-relaxed text-ink-soft">
+          <p>
+            Bevor ich Familien fotografiert habe, war ich mit der Kamera vor allem unterwegs. Drei Monate lang sind wir mit
+            dem Zelt durch die USA, Kanada und die Rocky Mountains gereist. Dazu kommen Reisen durch die schönsten Gegenden
+            Europas. Ich bin früh aufgestanden, um das erste Licht über
+            den Bergen zu erwischen, und habe nachts unter Sternenhimmeln gestanden.
+          </p>
+          <p>
+            Diese Geduld und dieses Gespür für Licht nehme ich heute mit zu euch. Wenn die Sonne aufgeht, bin ich bis heute
+            am liebsten mit der Kamera dabei.
+          </p>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-3 sm:gap-4">
+        <div class="relative col-span-2 aspect-[3/2] overflow-hidden rounded-[1.5rem]">
+          <Image src={landSee} alt="Türkisblauer Bergsee zwischen Nadelwäldern und Gipfeln" widths={[600, 1000, 1400]} sizes="(min-width: 1024px) 45vw, 100vw" class="absolute inset-0 h-full w-full bg-sand object-cover" style={{ objectPosition: "50% 0%" }} />
+        </div>
+        <div class="relative aspect-[3/2] overflow-hidden rounded-[1.5rem]">
+          <Image src={landHirsch} alt="Hirsch mit großem Geweih liegt im hohen Gras" widths={[400, 700]} sizes="(min-width: 1024px) 22vw, 50vw" class="absolute inset-0 h-full w-full bg-sand object-cover" style={{ objectPosition: "50% 0%" }} />
+        </div>
+        <div class="relative aspect-[3/2] overflow-hidden rounded-[1.5rem]">
+          <Image src={landSterne} alt="Sternenhimmel mit Milchstraße über dunklen Baumwipfeln" widths={[400, 700]} sizes="(min-width: 1024px) 22vw, 50vw" class="absolute inset-0 h-full w-full bg-sand object-cover" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lieblingsorte -->
+  <section class="py-24 sm:py-32">
+    <div class="container-page">
+      <div class="mx-auto max-w-2xl text-center">
+        <p class="eyebrow">Ganz in der Nähe</p>
+        <h2 class="mt-4 text-4xl sm:text-5xl">Meine Lieblingsorte</h2>
+        <p class="mt-5 leading-relaxed text-ink-soft">
+          Am liebsten fotografiere ich dort, wo ich selbst gern unterwegs bin. Alle drei Orte rund um Wurmberg sind wunderbar
+          für Familien, mit viel Platz zum Spielen und Entdecken. Euer eigener Lieblingsort ist natürlich genauso willkommen.
+        </p>
+      </div>
+      <ul class="mt-14 grid gap-6 md:grid-cols-3">
+        {
+          [
+            {
+              titel: "Die Felder zwischen Wurmberg und Wimsheim",
+              text: "Hier ist es herrlich weit. Man kann bis zum Horizont schauen, und am Abend scheint die Sonne wunderschön über die Felder.",
+              icon: `<path d="M2 20h20"/><path d="M5 20c1-5 3-8 7-8s6 3 7 8"/><circle cx="17" cy="6" r="2.5"/>`,
+            },
+            {
+              titel: "Am kleinen Tümpel zwischen Wurmberg und Mönsheim",
+              text: "Der Tümpel liegt mitten im Wald. Im Hintergrund schimmern die Blätter im Licht, das sieht auf Fotos zauberhaft aus.",
+              icon: `<path d="M10 10v.2A3 3 0 0 1 8.9 16H5a3 3 0 0 1-1-5.8V10a3 3 0 0 1 6 0Z"/><path d="M7 16v6"/><path d="M13 19v3"/><path d="M12 19h8.3a1 1 0 0 0 .7-1.7L18 14h.3a1 1 0 0 0 .7-1.7L16 9h.2a1 1 0 0 0 .8-1.7L13 3l-1.4 1.5"/>`,
+            },
+            {
+              titel: "Am Golfplatz auf der Leonberger Heide",
+              text: "Hier sind wir selbst immer wieder gern. Gleich nebenan gibt es einen schönen Spielplatz, auf dem sich die Kinder vor oder nach dem Shooting richtig austoben können.",
+              icon: `<path d="M12 18V2l7 4-7 4"/><path d="M4 22c0-2.2 3.6-4 8-4s8 1.8 8 4"/>`,
+            },
+          ].map((o) => (
+            <li class="rounded-[1.75rem] bg-linen p-8">
+              <span aria-hidden="true" class="flex size-12 items-center justify-center rounded-full bg-cream text-rose-deep">
+                <svg viewBox="0 0 24 24" class="size-6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" set:html={o.icon} />
+              </span>
+              <h3 class="mt-5 text-2xl leading-snug">{o.titel}</h3>
+              <p class="mt-3 leading-relaxed text-ink-soft">{o.text}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- Kundenstimmen -->
+  <Bewertungen start={2} />
 
   <!-- CTA -->
   <section class="bg-sand/60 py-24 sm:py-32">
     <div class="container-page text-center">
       <h2 class="mx-auto max-w-2xl text-4xl sm:text-5xl">Ich freue mich darauf, euch kennenzulernen.</h2>
       <p class="mx-auto mt-5 max-w-xl leading-relaxed text-ink-soft">
-        Von Familie zu Familie: Schreibt mir einfach ganz unverbindlich – gern auch, wenn ihr erst einmal nur Fragen habt.
+        Von Familie zu Familie: Schreibt mir einfach ganz unverbindlich, gern auch, wenn ihr erst einmal nur Fragen habt.
       </p>
       <div class="mt-9 flex flex-col justify-center gap-3 sm:flex-row">
         <a href="/kontakt/" class="btn-primary">Kontakt aufnehmen</a>
-        <a href="/galerie/" class="btn-ghost">Meine Arbeiten ansehen</a>
+        {whatsappAktiv ? (
+          <a href={whatsappHref()} target="_blank" rel="noopener" class="btn-ghost inline-flex items-center justify-center gap-2.5">
+            <WhatsappIcon />
+            Per WhatsApp schreiben
+          </a>
+        ) : (
+          <a href="/galerie/" class="btn-ghost">Meine Arbeiten ansehen</a>
+        )}
       </div>
     </div>
   </section>

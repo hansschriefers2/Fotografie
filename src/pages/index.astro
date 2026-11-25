@@ -3,23 +3,32 @@ import { Image } from "astro:assets";
 import Layout from "../layouts/Layout.astro";
 import HeroSlideshow from "../components/HeroSlideshow.astro";
 import SectionHeading from "../components/SectionHeading.astro";
+import Bewertungen from "../components/Bewertungen.astro";
+import GalerieHandy from "../components/GalerieHandy.astro";
 import { heroSlides, photos } from "../data/fotos";
-import { anfrageHref } from "../config";
+import { anfrageHref, whatsappAktiv, whatsappHref } from "../config";
+import WhatsappIcon from "../components/WhatsappIcon.astro";
+import { abPreis, euro, fotosInklusive, kombis, galerieMindestens } from "../data/preise";
+import { aktion, aktionsPreise } from "../data/aktion";
+import { gutschein } from "../data/gutschein";
+import GutscheinKarte from "../components/GutscheinKarte.astro";
+
+const kombiAb = Math.min(...kombis.map((k) => k.preis));
 
 const services = [
   {
-    title: "Baby & Newborn",
-    text: "Die ersten Tage vergehen so schnell. Winzige Finger, zarte Füße, der erste Schlaf – in Ruhe und ganz ohne Stress, gern bei euch zu Hause.",
-    photo: photos.baby09,
+    title: "Newborn",
+    text: "Die ersten Tage sind so kostbar. Winzige Finger und der erste tiefe Schlaf, in Ruhe und gern bei euch zu Hause.",
+    photo: photos.baby08,
   },
   {
-    title: "Familie",
-    text: "Draußen in der Natur, mit Lachen, Toben und Händchenhalten. Echte Momente statt steifer Posen – so, wie ihr wirklich seid.",
+    title: "Familie & Paare",
+    text: "Draußen in der Natur, mit Lachen, Toben und Händchenhalten. Ob mit Kindern oder zu zweit: so, wie ihr wirklich seid.",
     photo: photos.familie11,
   },
   {
     title: "Babybauch",
-    text: "Die Vorfreude festhalten. Ruhige, elegante Bilder einer ganz besonderen Zeit – auf Wunsch auch in zeitlosem Schwarz-Weiß.",
+    text: "Die Vorfreude festhalten. Ruhige, elegante Bilder einer ganz besonderen Zeit, auf Wunsch auch in Schwarz-Weiß.",
     photo: photos.schwangerschaft01,
   },
 ];
@@ -27,49 +36,65 @@ const services = [
 const steps = [
   {
     n: "01",
-    title: "Kennenlernen",
-    text: "Ihr meldet euch, wir sprechen in Ruhe über eure Wünsche, den passenden Ort und den idealen Zeitpunkt.",
+    title: "Anfrage",
+    text: "Schreibt mir per WhatsApp, E-Mail oder über das Kontaktformular, welches Shooting euch interessiert.",
   },
   {
     n: "02",
-    title: "Das Shooting",
-    text: "Entspannt, ohne Zeitdruck und mit viel Geduld. Pausen fürs Stillen, Kuscheln oder Spielen sind immer eingeplant.",
+    title: "Vorgespräch & Termin",
+    text: "Wir besprechen in Ruhe eure Wünsche, den passenden Ort und den idealen Zeitpunkt. Vorab bekommt ihr euren Shooting-Guide.",
   },
   {
     n: "03",
-    title: "Eure Bilder",
-    text: "Nach etwa zwei Wochen erhaltet ihr eure liebevoll bearbeiteten Bilder in einer privaten Online-Galerie.",
+    title: "Das Shooting",
+    text: "Ohne Zeitdruck und mit viel Geduld. Pausen fürs Stillen, Kuscheln oder Spielen sind immer eingeplant.",
+  },
+  {
+    n: "04",
+    title: "Eure Galerie",
+    text: "Nach etwa zwei Wochen bekommt ihr eure private Online-Galerie mit sorgfältig bearbeiteten Bildern.",
   },
 ];
 
-const streifen = [photos.baby02, photos.familie08, photos.baby13, photos.familie06];
 ---
 
 <Layout>
   <HeroSlideshow slides={heroSlides} />
 
+  {/* Portfolio-Aktion (an/aus in src/data/aktion.ts) */}
+  {
+    aktion.aktiv && (
+      <section class="bg-ink text-cream" aria-label={`${aktion.zeitraum}-Aktion`}>
+        <a
+          href="/aktion/"
+          class="container-page group flex flex-col items-start gap-5 py-8 sm:flex-row sm:items-center sm:gap-8 sm:py-7"
+        >
+          <span class="flex size-20 shrink-0 flex-col items-center justify-center rounded-full bg-rose-deep leading-none shadow-lg ring-4 ring-cream/10">
+            <span class="font-serif text-3xl">{aktion.rabattProzent} %</span>
+          </span>
+          <span class="flex-1">
+            <span class="block text-xs font-semibold tracking-[0.25em] text-rose uppercase">
+              {aktion.zeitraum} Fotoshootings · Wenige Plätze{aktion.bewerbungBisKurz && ` · Bis ${aktion.bewerbungBisKurz}`}
+            </span>
+            <span class="mt-1.5 block font-serif text-2xl sm:text-3xl">Eure Geschichte in meinem Portfolio</span>
+            <span class="mt-1 block text-sm text-cream/75">
+              {aktion.rabattProzent} % für Familien, die ihre Bilder mit anderen teilen mögen, z. B. Familie ab{" "}
+              {euro(Math.min(...aktionsPreise.map((p) => p.aktionspreis)))} statt {euro(Math.min(...aktionsPreise.map((p) => p.preis)))}.
+            </span>
+          </span>
+          <span class="btn shrink-0 border border-cream/40 text-cream transition-colors group-hover:bg-cream group-hover:text-ink">
+            Zur Aktion
+          </span>
+        </a>
+      </section>
+    )
+  }
+
   <!-- Philosophie -->
   <section class="py-24 sm:py-32">
-    <div class="container-page grid items-center gap-14 lg:grid-cols-2 lg:gap-20">
-      <div class="relative">
-        <div class="relative aspect-[4/5] overflow-hidden rounded-[2rem]">
-          <Image
-            src={photos.familie14.src}
-            alt={photos.familie14.alt}
-            widths={[600, 900, 1200]}
-            sizes="(min-width: 1024px) 40vw, 100vw"
-            class="absolute inset-0 h-full w-full bg-sand object-cover"
-          />
-        </div>
-        <div
-          class="absolute -right-4 -bottom-8 hidden w-44 overflow-hidden rounded-2xl border-8 border-cream shadow-xl sm:block lg:-right-10 lg:w-56"
-        >
-          <Image src={photos.baby14.src} alt={photos.baby14.alt} widths={[224, 448]} sizes="224px" class="h-auto w-full" />
-        </div>
-      </div>
-
-      <div>
-        <SectionHeading eyebrow="Willkommen">
+    <div class="container-page">
+      <div class="mx-auto max-w-2xl text-center">
+        <SectionHeading eyebrow="Willkommen" center>
           <Fragment slot="title">Bilder für <em class="font-light">später</em> – für das Gefühl von heute.</Fragment>
           <p>
             Irgendwann sind die Hände größer, die Schritte sicherer und die Babytage nur noch eine Erinnerung. Genau dafür
@@ -78,10 +103,10 @@ const streifen = [photos.baby02, photos.familie08, photos.baby13, photos.familie
           </p>
           <p class="mt-4">
             Mein Stil ist natürlich, warm und unaufgeregt. Keine künstlichen Kulissen, keine Trends, die schnell veralten –
-            sondern zeitlose Bilder, die mit euch mitwachsen.
+            sondern Bilder, die auch in zwanzig Jahren noch berühren.
           </p>
         </SectionHeading>
-        <div class="mt-9 flex flex-col gap-3 sm:flex-row">
+        <div class="mt-9 flex flex-col justify-center gap-3 sm:flex-row">
           <a href="/ueber-mich/" class="btn-primary">Mehr über mich</a>
           <a href="/preise/" class="btn-ghost">Pakete & Preise</a>
         </div>
@@ -92,7 +117,7 @@ const streifen = [photos.baby02, photos.familie08, photos.baby13, photos.familie
   <!-- Leistungen -->
   <section class="bg-linen py-24 sm:py-32">
     <div class="container-page">
-      <SectionHeading eyebrow="Shootings" title="Was ich für euch festhalte" center />
+      <SectionHeading eyebrow="Shootings" title="Meine Shootings" center />
       <div class="mt-16 grid gap-10 md:grid-cols-3 md:gap-8">
         {
           services.map((s) => (
@@ -104,6 +129,7 @@ const streifen = [photos.baby02, photos.familie08, photos.baby13, photos.familie
                   widths={[500, 800, 1100]}
                   sizes="(min-width: 768px) 33vw, 100vw"
                   class="absolute inset-0 h-full w-full bg-sand object-cover transition-transform duration-700 group-hover:scale-105"
+                  style={s.photo.fokus ? { objectPosition: s.photo.fokus } : undefined}
                 />
               </div>
               <h3 class="mt-7 text-3xl">{s.title}</h3>
@@ -119,7 +145,7 @@ const streifen = [photos.baby02, photos.familie08, photos.baby13, photos.familie
   <section class="py-24 sm:py-32">
     <div class="container-page">
       <SectionHeading eyebrow="So läuft's ab" title="Entspannt von Anfang an" />
-      <ol class="mt-14 grid gap-10 md:grid-cols-3">
+      <ol class="mt-14 grid gap-10 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
         {
           steps.map((s) => (
             <li class="border-t border-ink/15 pt-6">
@@ -133,22 +159,114 @@ const streifen = [photos.baby02, photos.familie08, photos.baby13, photos.familie
     </div>
   </section>
 
-  <!-- Bildstreifen -->
-  <section aria-label="Einblicke" class="grid grid-cols-2 gap-1 sm:grid-cols-4">
-    {
-      streifen.map((p) => (
-        <div class="relative aspect-square overflow-hidden">
-          <Image
-            src={p.src}
-            alt={p.alt}
-            widths={[400, 700, 1000]}
-            sizes="(min-width: 640px) 25vw, 50vw"
-            class="absolute inset-0 h-full w-full bg-sand object-cover"
-          />
+  <!-- So bekommt ihr eure Bilder -->
+  <section id="eure-galerie" class="overflow-hidden bg-linen py-24 sm:py-32">
+    <div class="container-page grid items-center gap-16 lg:grid-cols-[5fr_6fr] lg:gap-24">
+      <div class="relative order-2 lg:order-1">
+        <div aria-hidden="true" class="absolute top-1/2 left-1/2 size-[22rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-rose/25 sm:size-[26rem]"></div>
+        <div class="relative">
+          <GalerieHandy />
         </div>
-      ))
-    }
+      </div>
+      <div class="order-1 lg:order-2">
+        <SectionHeading eyebrow="Eure Galerie" title="So bekommt ihr eure Bilder">
+          <p>Eure Galerie ist schön zum Durchklicken auf dem Sofa, am Handy oder am Computer. So einfach geht's:</p>
+        </SectionHeading>
+        <!-- Senkrechte Linie mit Symbolen (bewusst anders als der nummerierte Ablauf oben) -->
+        <ul class="relative mt-10 space-y-7 before:absolute before:top-5 before:bottom-5 before:left-5 before:w-px before:bg-rose-deep/25">
+          {
+            [
+              {
+                titel: "Link & Passwort per E-Mail",
+                text: "Eure Galerie ist privat und nur für euch und die, mit denen ihr sie teilt.",
+                icon: `<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>`,
+              },
+              {
+                titel: "Lieblinge mit dem Herz markieren",
+                text: `Mindestens ${galerieMindestens} Fotos zur Auswahl, ${fotosInklusive} davon sind inklusive, weitere könnt ihr dazunehmen.`,
+                icon: `<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>`,
+              },
+              {
+                titel: "In voller Auflösung herunterladen",
+                text: "Sorgfältig bearbeitet, zum Ausdrucken, Einrahmen und Aufheben.",
+                icon: `<path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/>`,
+              },
+              {
+                titel: "Teilen & Abzüge bestellen",
+                text: "Mit Oma, Opa und Freunden teilen und auf Wunsch Abzüge oder ein Fotobuch direkt bestellen.",
+                icon: `<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4"/><path d="m15.4 6.5-6.8 4"/>`,
+              },
+            ].map((s) => (
+              <li class="relative flex gap-5">
+                <span
+                  aria-hidden="true"
+                  class="relative flex size-10 shrink-0 items-center justify-center rounded-full bg-cream text-rose-deep shadow-sm ring-4 ring-linen"
+                >
+                  <svg viewBox="0 0 24 24" class="size-[1.1rem]" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" set:html={s.icon} />
+                </span>
+                <div class="pt-1.5">
+                  <h3 class="text-xl leading-snug">{s.titel}</h3>
+                  <p class="mt-1 leading-relaxed text-ink-soft">{s.text}</p>
+                </div>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
   </section>
+
+  <!-- Kundenstimmen (nur echte Bewertungen aus src/data/bewertungen.ts) -->
+  <Bewertungen />
+
+  <!-- Preisvorschau (bewusst knapp – Details im Preisguide, der auf Anfrage verschickt wird) -->
+  <section class="bg-linen py-24 sm:py-32">
+    <div class="container-page grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
+      <SectionHeading eyebrow="Preise" title="Preise auf einen Blick">
+        <p>
+          Jedes Shooting mit {fotosInklusive} bearbeiteten Fotos und persönlichem Vorgespräch.
+          Alle Details schicke ich euch gern in meinem Preisguide.
+        </p>
+      </SectionHeading>
+      <div>
+        <dl class="grid grid-cols-2 gap-4">
+          <div class="rounded-[1.5rem] bg-cream p-7">
+            <dt class="text-sm text-ink-soft">Shootings</dt>
+            <dd class="mt-2 font-serif text-5xl"><span class="text-xl text-ink-soft">ab </span>{euro(abPreis)}</dd>
+          </div>
+          <div class="rounded-[1.5rem] bg-cream p-7">
+            <dt class="text-sm text-ink-soft">Kombipakete</dt>
+            <dd class="mt-2 font-serif text-5xl"><span class="text-xl text-ink-soft">ab </span>{euro(kombiAb)}</dd>
+          </div>
+        </dl>
+        <a href="/preise/" class="btn-primary mt-6">Mehr zu den Preisen</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Gutschein (vor Weihnachten) -->
+  {
+    gutschein.weihnachten && (
+      <section class="py-20 sm:py-28">
+        <div class="container-page">
+          <a href="/gutschein/" class="group grid items-center gap-10 rounded-[2rem] bg-rose/15 p-8 transition-colors hover:bg-rose/25 sm:p-12 lg:grid-cols-[6fr_5fr] lg:gap-16">
+            <div>
+              <p class="eyebrow">Geschenkidee</p>
+              <h2 class="mt-4 text-4xl sm:text-5xl">Ein Shooting <em class="font-light">verschenken</em></h2>
+              <p class="mt-5 max-w-lg leading-relaxed text-ink-soft">
+                🎄 Noch auf der Suche nach einem Weihnachtsgeschenk, das bleibt? Mit einem Gutschein verschenkt ihr Erinnerungen –
+                als Wert oder für ein bestimmtes Shooting.
+              </p>
+              <span class="btn-primary mt-8">Zum Gutschein</span>
+            </div>
+            <div class="mx-auto w-full max-w-md rotate-[2deg] transition-transform duration-500 group-hover:rotate-0">
+              <GutscheinKarte fuer="Euren Lieblingsmenschen" von="Euch" wert="Familie & Paare" />
+            </div>
+          </a>
+        </div>
+      </section>
+    )
+  }
 
   <!-- CTA -->
   <section class="bg-sand/60 py-24 sm:py-32">
@@ -156,12 +274,19 @@ const streifen = [photos.baby02, photos.familie08, photos.baby13, photos.familie
       <p class="eyebrow">Termine</p>
       <h2 class="mx-auto mt-4 max-w-2xl text-4xl sm:text-5xl">Lasst uns eure Geschichte gemeinsam festhalten.</h2>
       <p class="mx-auto mt-5 max-w-xl leading-relaxed text-ink-soft">
-        Für Newborn-Shootings meldet euch am besten schon während der Schwangerschaft – die schönste Zeit dafür sind die
+        Für Newborn-Shootings meldet euch am besten schon während der Schwangerschaft. Die schönste Zeit dafür sind die
         ersten 14 Lebenstage.
       </p>
       <div class="mt-9 flex flex-col justify-center gap-3 sm:flex-row">
         <a href={anfrageHref} class="btn-primary">Unverbindlich anfragen</a>
-        <a href="/galerie/" class="btn-ghost">Mehr Bilder ansehen</a>
+        {whatsappAktiv ? (
+          <a href={whatsappHref()} target="_blank" rel="noopener" class="btn-ghost inline-flex items-center justify-center gap-2.5">
+            <WhatsappIcon />
+            Per WhatsApp schreiben
+          </a>
+        ) : (
+          <a href="/galerie/" class="btn-ghost">Mehr Bilder ansehen</a>
+        )}
       </div>
     </div>
   </section>

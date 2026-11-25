@@ -1,7 +1,6 @@
 ---
-// Bindet ein Pixieset-Formular (Buchung oder Kontakt) DSGVO-freundlich ein:
-// Der iframe wird erst nach einem Klick geladen ("Zwei-Klick-Lösung"),
-// vorher fließen keine Daten an Pixieset. Ohne JavaScript bleibt der direkte Link.
+// Bindet ein Pixieset-Formular (Buchung oder Kontakt) direkt ein.
+// Darunter ein kurzer Datenschutz-Hinweis und der Link zum Öffnen in einem neuen Tab.
 interface Props {
   url: string;
   titel: string;
@@ -11,35 +10,19 @@ interface Props {
 const { url, titel, hoehe = 900 } = Astro.props;
 ---
 
-<div
-  class="overflow-hidden rounded-[1.75rem] bg-linen"
-  data-pixieset-embed
-  data-src={url}
-  data-titel={titel}
-  style={`--hoehe: ${hoehe}px`}
->
-  <div class="p-8 sm:p-10">
-    <p class="font-serif text-3xl">{titel}</p>
-    <p class="mt-4 max-w-lg leading-relaxed text-ink-soft">
-      Das Formular wird von <strong class="text-ink">Pixieset</strong> bereitgestellt. Beim Laden werden Daten an Pixieset
-      übertragen (siehe <a href="/datenschutz/" class="text-rose-deep underline underline-offset-2">Datenschutzerklärung</a>).
-    </p>
-    <div class="mt-8 flex flex-col gap-3 sm:flex-row">
-      <button type="button" class="btn-primary" data-laden>Formular laden</button>
-      <a class="btn-ghost" href={url} target="_blank" rel="noopener">In neuem Tab öffnen</a>
-    </div>
-  </div>
+<div>
+<div class="overflow-hidden rounded-[1.75rem] bg-white shadow-[0_1px_0_rgba(63,53,49,0.06)]">
+  <iframe
+    src={url}
+    title={titel}
+    loading="lazy"
+    class="block w-full border-0 bg-white"
+    style={`height: ${hoehe}px`}
+  ></iframe>
 </div>
-
-<script>
-  document.querySelectorAll<HTMLElement>("[data-pixieset-embed]").forEach((box) => {
-    box.querySelector("[data-laden]")?.addEventListener("click", () => {
-      const iframe = document.createElement("iframe");
-      iframe.src = box.dataset.src ?? "";
-      iframe.title = box.dataset.titel ?? "Pixieset";
-      iframe.className = "block w-full border-0 bg-white";
-      iframe.style.height = "var(--hoehe, 900px)";
-      box.replaceChildren(iframe);
-    });
-  });
-</script>
+<p class="mt-4 text-xs leading-relaxed text-ink-soft">
+  Das Formular wird von Pixieset bereitgestellt (siehe
+  <a href="/datenschutz/" class="underline underline-offset-2 hover:text-ink">Datenschutzerklärung</a>). Probleme beim Laden?
+  <a href={url} target="_blank" rel="noopener" class="underline underline-offset-2 hover:text-ink">Formular in neuem Tab öffnen</a>.
+</p>
+</div>

@@ -1,0 +1,154 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import GutscheinKarte from "../../components/GutscheinKarte.astro";
+import WhatsappIcon from "../../components/WhatsappIcon.astro";
+import { gutschein, gutscheinShootings } from "../../data/gutschein";
+import { euro, fotosInklusive } from "../../data/preise";
+import { site, whatsappAktiv, whatsappHref } from "../../config";
+
+const anfrage = `Hallo ${site.firstName},\n\nich möchte gern einen Gutschein verschenken.\n\nWert oder Shooting: \nFür (Name): \nVon (Name): \nAls PDF per E-Mail oder gedruckt per Post: \n\nViele Grüße`;
+const mailHref = `mailto:${site.email}?subject=${encodeURIComponent("Gutschein")}&body=${encodeURIComponent(anfrage)}`;
+const waText = `Hallo ${site.firstName}, ich möchte gern einen Gutschein verschenken.`;
+
+const schritte = [
+  { titel: "Schreibt mir", text: "Sagt mir, ob ihr einen Betrag oder ein bestimmtes Shooting verschenken möchtet und für wen er ist." },
+  { titel: "Überweisen", text: "Ihr bekommt von mir eine kurze Rechnung und überweist den Betrag ganz bequem." },
+  { titel: "Verschenken", text: "Euer Gutschein kommt als hübsches PDF zum Ausdrucken oder Weiterleiten. Auf Wunsch auch gedruckt per Post." },
+];
+
+const gutZuWissen = [
+  `${gutschein.gueltigJahre} Jahre gültig, den Termin stimmen wir ganz frei gemeinsam ab`,
+  `Jedes Shooting mit Vorgespräch, Online-Galerie und ${fotosInklusive} bearbeiteten Fotos`,
+  "Perfekt zur Geburt, zur Babyparty, zum Jahrestag oder einfach so",
+  "Ein Wertgutschein kann für jedes Shooting und für zusätzliche Fotos eingelöst werden",
+];
+---
+
+<Layout
+  title="Gutschein"
+  description={`Ein Fotoshooting verschenken: Gutscheine von ${site.name} für Babybauch, Newborn, Familie & Paare – als Wert oder für ein bestimmtes Shooting.`}
+>
+  <!-- Kopf mit Gutschein -->
+  <section class="overflow-hidden bg-linen pt-36 pb-20 sm:pt-44 sm:pb-28">
+    <div class="container-page grid items-center gap-14 lg:grid-cols-[5fr_6fr] lg:gap-20">
+      <div>
+        <p class="eyebrow">{gutschein.weihnachten ? "Geschenkidee für Weihnachten" : "Gutschein"}</p>
+        <h1 class="mt-4 text-5xl sm:text-6xl">Ein Shooting <em class="font-light">verschenken</em></h1>
+        <p class="mt-6 max-w-xl text-lg leading-relaxed text-ink-soft">
+          Ein Geschenk, das bleibt: Erinnerungen, die man in vielen Jahren noch gern anschaut. Ob für die werdenden Eltern,
+          die frischgebackene Familie oder euch beide als Paar.
+        </p>
+        {
+          gutschein.weihnachten && (
+            <p class="mt-5 font-serif text-xl text-rose-deep italic">
+              🎄 Bis zum {gutschein.weihnachtenBis} bestellt, rechtzeitig unterm Weihnachtsbaum.
+            </p>
+          )
+        }
+        <div class="mt-9 flex flex-col gap-3 sm:flex-row">
+          {
+            whatsappAktiv && (
+              <a href={whatsappHref(waText)} target="_blank" rel="noopener" class="btn-primary inline-flex items-center justify-center gap-2.5">
+                <WhatsappIcon />
+                Per WhatsApp
+              </a>
+            )
+          }
+          <a href={mailHref} class={whatsappAktiv ? "btn-ghost" : "btn-primary"}>Per E-Mail</a>
+        </div>
+      </div>
+      <div class="relative">
+        <div aria-hidden="true" class="absolute -top-10 -right-10 size-56 rounded-full bg-rose/25 sm:size-72"></div>
+        <div class="relative rotate-[-2deg]">
+          <GutscheinKarte fuer="Euren Lieblingsmenschen" von="Euch" wert="Ein Newborn-Shooting" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Auswahl -->
+  <section class="py-24 sm:py-32">
+    <div class="container-page grid gap-8 lg:grid-cols-2">
+      <div class="rounded-[1.75rem] bg-linen p-8 sm:p-12">
+        <p class="eyebrow">Wertgutschein</p>
+        <h2 class="mt-4 text-4xl">Ein Betrag eurer Wahl</h2>
+        <p class="mt-4 leading-relaxed text-ink-soft">
+          Ihr bestimmt den Betrag, die Beschenkten suchen sich später selbst aus, welches Shooting es wird.
+        </p>
+        <div class="mt-8 flex flex-wrap gap-3">
+          {gutschein.betraege.map((b) => <span class="rounded-full bg-cream px-5 py-2 font-serif text-2xl">{euro(b)}</span>)}
+          <span class="rounded-full border border-dashed border-ink/25 px-5 py-2 font-serif text-2xl text-ink-soft italic">frei wählbar</span>
+        </div>
+      </div>
+      <div class="rounded-[1.75rem] bg-sand/50 p-8 sm:p-12">
+        <p class="eyebrow">Shooting-Gutschein</p>
+        <h2 class="mt-4 text-4xl">Ein ganzes Shooting</h2>
+        <ul class="mt-6 divide-y divide-ink/10">
+          {
+            gutscheinShootings.map((s) => (
+              <li class="flex items-baseline justify-between gap-4 py-3">
+                <span class="font-serif text-2xl">{s.name}</span>
+                <span class="shrink-0 text-ink-soft">{euro(s.preis)}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- So geht's -->
+  <section class="bg-linen py-24 sm:py-32">
+    <div class="container-page grid gap-16 lg:grid-cols-2 lg:gap-24">
+      <div>
+        <p class="eyebrow">So einfach geht's</p>
+        <h2 class="mt-4 text-4xl sm:text-5xl">In drei Schritten zum Geschenk</h2>
+        <ol class="mt-10 space-y-7">
+          {
+            schritte.map((s, i) => (
+              <li class="flex gap-5">
+                <span class="flex size-10 shrink-0 items-center justify-center rounded-full bg-cream font-serif text-lg text-rose-deep">{i + 1}</span>
+                <div>
+                  <h3 class="text-2xl">{s.titel}</h3>
+                  <p class="mt-1 leading-relaxed text-ink-soft">{s.text}</p>
+                </div>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+      <div class="self-center rounded-[1.75rem] bg-cream p-8 sm:p-10">
+        <h3 class="text-3xl">Gut zu wissen</h3>
+        <ul class="mt-6 space-y-4">
+          {
+            gutZuWissen.map((g) => (
+              <li class="flex gap-3 leading-relaxed text-ink-soft">
+                <span aria-hidden="true" class="text-rose-deep">♡</span>
+                {g}
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Abschluss -->
+  <section class="py-24 text-center sm:py-32">
+    <div class="container-page">
+      <h2 class="mx-auto max-w-2xl text-4xl sm:text-5xl">Schenkt Erinnerungen, die mitwachsen.</h2>
+      <p class="mx-auto mt-5 max-w-xl leading-relaxed text-ink-soft">Schreibt mir einfach, ich kümmere mich um den Rest.</p>
+      <div class="mt-9 flex flex-col justify-center gap-3 sm:flex-row">
+        {
+          whatsappAktiv && (
+            <a href={whatsappHref(waText)} target="_blank" rel="noopener" class="btn-primary inline-flex items-center justify-center gap-2.5">
+              <WhatsappIcon />
+              Per WhatsApp schreiben
+            </a>
+          )
+        }
+        <a href={mailHref} class={whatsappAktiv ? "btn-ghost" : "btn-primary"}>Per E-Mail schreiben</a>
+      </div>
+    </div>
+  </section>
+</Layout>

@@ -3,7 +3,7 @@ import LegalPage from "../components/LegalPage.astro";
 import { site } from "../config";
 ---
 
-<LegalPage title="Impressum">
+<LegalPage title="Impressum" muster={false}>
   <h2>Angaben gemäß § 5 DDG</h2>
   <p>
     {site.name}<br />
@@ -20,12 +20,11 @@ import { site } from "../config";
 
   <h2>Umsatzsteuer</h2>
   <p>
-    Umsatzsteuer-Identifikationsnummer gemäß § 27a UStG: <em>[falls vorhanden eintragen]</em><br />
-    <em>[Alternativ bei Kleinunternehmerregelung: Hinweis gemäß § 19 UStG]</em>
+    Umsatzsteuer-Identifikationsnummer gemäß § 27a UStG.
   </p>
 
   <h2>Berufsbezeichnung</h2>
-  <p>Fotografin <em>[ggf. Handwerkskammer und Eintragung in die Handwerksrolle angeben]</em></p>
+  <p>Fotografin</p>
 
   <h2>Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV</h2>
   <p>{site.owner}, {site.street}, {site.city}</p>

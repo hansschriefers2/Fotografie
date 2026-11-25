@@ -1,116 +1,93 @@
 ---
+// Öffentliche, bewusst knappe Preisseite. Alle Details stehen im Preisguide (/preisguide/),
+// der nicht verlinkt ist und auf Anfrage per Link verschickt wird.
+import { Image } from "astro:assets";
 import Layout from "../layouts/Layout.astro";
 import PageHeader from "../components/PageHeader.astro";
-import { bundle, extras, faq, packages } from "../data/preise";
-import { pixieset } from "../config";
+import { photos } from "../data/fotos";
+import { abPreis, euro, fotosInklusive, inklusive, kombis, shootings } from "../data/preise";
+import { site } from "../config";
 
-// Mit Pixieset-Buchungslink geht „Anfragen“ zur Buchung, sonst zur Kontaktseite (Paket wird vorausgewählt)
-const anfragen = (paket: string) =>
-  pixieset.buchungUrl ? "/buchen/" : `/kontakt/?paket=${encodeURIComponent(paket)}`;
+const kombiAb = Math.min(...kombis.map((k) => k.preis));
 ---
 
-<Layout title="Preise" description="Pakete und Preise für Newborn-, Familien- und Babybauchshootings.">
+<Layout title="Preise" description={`Shootings bei ${site.name} ab ${euro(abPreis)} – mit ${fotosInklusive} bearbeiteten Fotos, Vorgespräch und Online-Galerie.`}>
   <PageHeader
     eyebrow="Preise"
-    title="Pakete für eure Erinnerungen"
-    intro="Transparent und ohne versteckte Kosten. Jedes Paket lässt sich individuell erweitern – sprecht mich einfach an."
+    title="Was ein Shooting kostet"
+    intro="Jedes Shooting ist ein bisschen anders. Hier gibt es einen ersten Überblick."
   />
 
+  <!-- Eckdaten -->
   <section class="container-page py-16 sm:py-24">
-    <div class="grid gap-6 lg:grid-cols-3">
-      {
-        packages.map((p) => (
-          <article
-            class:list={[
-              "relative flex flex-col rounded-[1.75rem] p-8 sm:p-10",
-              p.highlight ? "bg-ink text-cream" : "border border-ink/10 bg-white/60",
-            ]}
-          >
-            {p.highlight && (
-              <span class="absolute -top-3 left-8 rounded-full bg-rose px-4 py-1 text-xs font-semibold tracking-wider text-ink uppercase">
-                Beliebt
-              </span>
-            )}
-            <h2 class="text-3xl">{p.name}</h2>
-            <p class:list={["mt-1 text-sm", p.highlight ? "text-cream/70" : "text-ink-soft"]}>{p.duration}</p>
-            <p class="mt-6 font-serif text-5xl">{p.price}</p>
-            <ul class:list={["mt-8 flex-1 space-y-3 text-sm", p.highlight ? "text-cream/90" : "text-ink-soft"]}>
-              {p.features.map((f) => (
-                <li class="flex gap-3">
-                  <span aria-hidden="true" class={p.highlight ? "text-rose" : "text-rose-deep"}>
-                    ✓
-                  </span>
-                  {f}
-                </li>
-              ))}
-            </ul>
-            <a
-              href={anfragen(p.name)}
-              class:list={[
-                "btn mt-10",
-                p.highlight ? "bg-cream text-ink hover:bg-rose" : "bg-ink text-cream hover:bg-rose-deep",
-              ]}
-            >
-              Anfragen
-            </a>
-          </article>
-        ))
-      }
+    <dl class="grid gap-6 md:grid-cols-3">
+      <div class="rounded-[1.75rem] bg-ink p-8 text-cream sm:p-10">
+        <dt class="text-xs font-semibold tracking-[0.25em] text-rose uppercase">Shootings</dt>
+        <dd class="mt-4 font-serif text-6xl"><span class="text-2xl text-cream/70">ab </span>{euro(abPreis)}</dd>
+      </div>
+      <div class="rounded-[1.75rem] bg-linen p-8 sm:p-10">
+        <dt class="eyebrow">Immer inklusive</dt>
+        <dd class="mt-4 font-serif text-6xl">{fotosInklusive} <span class="text-2xl text-ink-soft">Fotos</span></dd>
+      </div>
+      <div class="rounded-[1.75rem] bg-linen p-8 sm:p-10">
+        <dt class="eyebrow">Kombipakete</dt>
+        <dd class="mt-4 font-serif text-6xl"><span class="text-2xl text-ink-soft">ab </span>{euro(kombiAb)}</dd>
+      </div>
+    </dl>
+
+    <div class="mt-20 grid gap-14 lg:grid-cols-2 lg:gap-20">
+      <div>
+        <p class="eyebrow">Shootings</p>
+        <h2 class="mt-4 text-4xl sm:text-5xl">Was ich für euch festhalte</h2>
+        <ul class="mt-8 divide-y divide-ink/10 border-y border-ink/10">
+          {
+            shootings.map((s) => (
+              <li class="flex items-baseline justify-between gap-6 py-4">
+                <span class="font-serif text-2xl">{s.name}</span>
+                <span class="shrink-0 text-sm text-ink-soft">{s.dauer}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+      <div>
+        <p class="eyebrow">Immer dabei</p>
+        <h2 class="mt-4 text-4xl sm:text-5xl">In jedem Paket</h2>
+        <ul class="mt-8 space-y-4">
+          {
+            inklusive.map((x) => (
+              <li class="flex gap-4 leading-relaxed text-ink-soft">
+                <span aria-hidden="true" class="text-rose-deep">✓</span>
+                <span><strong class="font-semibold text-ink">{x.titel}:</strong> {x.text}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
     </div>
-
-    <article
-      class="mt-6 flex flex-col gap-6 rounded-[1.75rem] bg-sand/70 p-8 sm:p-10 md:flex-row md:items-center md:justify-between"
-    >
-      <div class="max-w-2xl">
-        <p class="eyebrow">Kombi-Paket</p>
-        <h2 class="mt-3 text-3xl sm:text-4xl">{bundle.name}</h2>
-        <p class="mt-3 leading-relaxed text-ink-soft">{bundle.text}</p>
-      </div>
-      <div class="shrink-0 md:text-right">
-        <p class="font-serif text-5xl">{bundle.price}</p>
-        <a href={anfragen(bundle.name)} class="btn-primary mt-4">Anfragen</a>
-      </div>
-    </article>
-
-    <p class="mt-6 text-xs text-ink-soft">
-      Alle Preise sind Endpreise.
-      {/* TODO: z. B. „Gemäß § 19 UStG wird keine Umsatzsteuer berechnet.“ – mit Steuerberatung klären */}
-    </p>
   </section>
 
-  <section class="bg-linen py-16 sm:py-24">
-    <div class="container-page grid gap-16 lg:grid-cols-2">
-      <div>
-        <p class="eyebrow">Extras</p>
-        <h2 class="mt-4 text-4xl">Zusätzlich buchbar</h2>
-        <dl class="mt-8 divide-y divide-ink/10 border-y border-ink/10">
-          {
-            extras.map((e) => (
-              <div class="flex justify-between gap-6 py-4">
-                <dt class="text-ink-soft">{e.name}</dt>
-                <dd class="shrink-0 font-semibold">{e.price}</dd>
-              </div>
-            ))
-          }
-        </dl>
+  <!-- Preisguide anfordern -->
+  <section class="bg-linen py-20 sm:py-28">
+    <div class="container-page grid items-center gap-12 lg:grid-cols-[5fr_6fr] lg:gap-20">
+      <div class="relative aspect-[3/2] overflow-hidden rounded-[2rem]">
+        <Image
+          src={photos.familie11.src}
+          alt={photos.familie11.alt}
+          widths={[500, 800, 1100]}
+          sizes="(min-width: 1024px) 40vw, 100vw"
+          class="absolute inset-0 h-full w-full bg-sand object-cover"
+        />
       </div>
       <div>
-        <p class="eyebrow">Häufige Fragen</p>
-        <h2 class="mt-4 text-4xl">Gut zu wissen</h2>
-        <div class="mt-8 divide-y divide-ink/10 border-y border-ink/10">
-          {
-            faq.map((f) => (
-              <details class="group py-4">
-                <summary class="flex cursor-pointer list-none items-center justify-between gap-4 font-medium [&::-webkit-details-marker]:hidden">
-                  {f.q}
-                  <span aria-hidden="true" class="text-xl text-rose-deep transition-transform group-open:rotate-45">
-                    +
-                  </span>
-                </summary>
-                <p class="mt-3 leading-relaxed text-ink-soft">{f.a}</p>
-              </details>
-            ))
-          }
+        <p class="eyebrow">Preisguide</p>
+        <h2 class="mt-4 text-4xl sm:text-5xl">Alle Details auf einen Blick</h2>
+        <p class="mt-5 max-w-xl leading-relaxed text-ink-soft">
+          Im Preisguide findet ihr alle Pakete und Preise, die Kombipakete, Extras, den Ablauf und Antworten auf die
+          häufigsten Fragen. Schreibt mir kurz über das Kontaktformular, dann schicke ich ihn euch gern persönlich zu.
+        </p>
+        <div class="mt-9">
+          <a href="/kontakt/?preisguide" class="btn-primary">Preisguide anfordern</a>
         </div>
       </div>
     </div>

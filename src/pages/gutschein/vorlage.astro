@@ -1,0 +1,56 @@
+---
+// Druckvorlage für den Gutschein (DIN A5 quer, 2 Seiten) – nicht verlinkt, noindex.
+// Leer = Linien zum Ausfüllen. Optional per URL vorausfüllen:
+// /gutschein/vorlage/?fuer=…&von=…&wert=…&bis=…&nr=…  (wird im Browser eingesetzt)
+import Layout from "../../layouts/Layout.astro";
+import GutscheinKarte from "../../components/GutscheinKarte.astro";
+import { gutschein } from "../../data/gutschein";
+import { site } from "../../config";
+---
+
+<Layout title="Gutschein-Vorlage" noindex>
+  <style is:inline>
+    @page { size: 210mm 148mm; margin: 0; }
+    @media print {
+      .blatt { width: 210mm; height: 148mm; margin: 0 !important; box-shadow: none !important; break-after: page; }
+      main { padding: 0 !important; }
+    }
+  </style>
+  <div class="space-y-10 bg-sand/40 px-4 pt-28 pb-16 print:space-y-0 print:bg-transparent print:p-0">
+    <!-- Seite 1: Gutschein -->
+    <div class="blatt mx-auto max-w-[840px]" data-gutschein>
+      <GutscheinKarte druck />
+    </div>
+
+    <!-- Seite 2: So löst ihr ihn ein -->
+    <div class="blatt @container relative mx-auto aspect-[210/148] max-w-[840px] overflow-hidden bg-linen text-ink">
+      <div class="absolute -right-[6cqw] -bottom-[6cqw] h-[34cqw] w-[26cqw] rounded-t-full bg-sand" aria-hidden="true"></div>
+      <div class="absolute right-[10cqw] -bottom-[3cqw] h-[18cqw] w-[13cqw] rounded-t-full bg-rose/45" aria-hidden="true"></div>
+      <div class="relative flex h-full flex-col px-[9cqw] py-[8cqw]">
+        <p class="text-[1.5cqw] font-semibold tracking-[0.3em] text-rose-deep uppercase">So löst ihr euren Gutschein ein</p>
+        <p class="mt-[2cqw] max-w-[60cqw] font-serif text-[5cqw] leading-tight">Ich freue mich darauf, eure Geschichte festzuhalten.</p>
+        <ol class="mt-[4cqw] max-w-[58cqw] space-y-[2cqw] text-[1.75cqw] leading-relaxed text-ink-soft">
+          <li><span class="font-serif text-[2.4cqw] text-rose-deep">1&ensp;</span>Meldet euch per E-Mail{site.whatsapp ? " oder WhatsApp" : ""} und nennt mir die Gutschein-Nummer.</li>
+          <li><span class="font-serif text-[2.4cqw] text-rose-deep">2&ensp;</span>Gemeinsam finden wir einen Termin und den schönsten Ort für euch.</li>
+          <li><span class="font-serif text-[2.4cqw] text-rose-deep">3&ensp;</span>Ihr genießt das Shooting und bekommt eure Bilder in einer privaten Online-Galerie.</li>
+        </ol>
+        <div class="mt-auto text-[1.6cqw] leading-relaxed">
+          <p>{site.email}{site.whatsapp ? ` · WhatsApp ${site.whatsapp}` : ""}</p>
+          <p>www.{site.email.split("@")[1]}</p>
+          <p class="mt-[1cqw] text-[1.25cqw] text-ink-soft">
+            Gültig {gutschein.gueltigJahre} Jahre ab Ausstellung. Keine Barauszahlung. Es gelten die AGB von {site.name}.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Optional per URL vorausfüllen (z. B. für einen fertigen Gutschein)
+    const p = new URLSearchParams(location.search);
+    const felder = document.querySelectorAll<HTMLElement>("[data-gutschein] dd");
+    ["fuer", "von", "wert"].forEach((k, i) => p.get(k) && felder[i] && (felder[i].textContent = p.get(k)));
+    const spans = document.querySelectorAll<HTMLElement>("[data-gutschein] span.inline-block");
+    ["bis", "nr"].forEach((k, i) => p.get(k) && spans[i] && (spans[i].textContent = p.get(k)));
+  </script>
+</Layout>

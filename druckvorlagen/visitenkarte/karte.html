@@ -1,0 +1,51 @@
+<!doctype html><html lang="de"><head><meta charset="utf-8"><style>
+@font-face{font-family:C;src:url(c.woff2)}@font-face{font-family:C;font-style:italic;src:url(ci.woff2)}@font-face{font-family:M;src:url(m.woff2);font-weight:200 800}
+@page{size:91mm 61mm;margin:0}
+*{box-sizing:border-box;margin:0}
+html,body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.seite{width:91mm;height:61mm;position:relative;overflow:hidden;break-after:page}
+/* Beschnitt 3 mm: sichtbarer Bereich 85x55 mm, Inhalte mind. 3 mm vom Endformat entfernt */
+.vorne{background:#f4ede5;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.bogen{position:absolute;right:-8mm;bottom:-6mm;width:24mm;height:30mm;border-radius:12mm 12mm 0 0;background:#e8ddd1}
+.bogen2{position:absolute;right:7mm;bottom:-6mm;width:13mm;height:17mm;border-radius:6.5mm 6.5mm 0 0;background:#d9a9a1;opacity:.55}
+.punkt{position:absolute;left:14mm;top:13mm;width:5mm;height:5mm;border-radius:50%;background:#d9a9a1;opacity:.6}
+.logo{position:relative;text-align:center;line-height:1}
+.logo b{display:block;font-family:C;font-weight:400;font-size:24pt;color:#3f3531;letter-spacing:.02em}
+.logo small{display:block;font-family:M;font-weight:600;font-size:6pt;letter-spacing:.42em;padding-left:.42em;color:#a8655e;margin-top:2.2mm;text-transform:uppercase}
+.claim{position:relative;font-family:C;font-style:italic;font-size:10pt;color:#6e625c;margin-top:3mm}
+.kam{position:relative;width:7mm;height:5mm;margin-bottom:2.4mm}
+.orte{position:relative;font-family:M;font-size:5pt;letter-spacing:.06em;line-height:1.6;color:#a8655e;text-align:center;margin-top:2.6mm}
+.hinten{background:#fbf8f4;padding:7.5mm 8mm 7mm 8mm;display:grid;grid-template-columns:1fr 19mm;gap:4mm;align-items:start}
+.name{font-family:C;font-size:15pt;color:#3f3531;line-height:1}
+.rolle{font-family:M;font-size:5.6pt;letter-spacing:.22em;text-transform:uppercase;color:#a8655e;margin-top:1.3mm}
+.kontakt{font-family:M;font-size:6.6pt;line-height:1.65;color:#3f3531;margin-top:3.2mm}
+.kontakt p{display:flex;align-items:center;gap:1.6mm}.kontakt i{display:inline-flex;width:2.6mm;height:2.6mm}.kontakt svg{width:100%;height:100%}
+.qr img{display:block;width:19mm;height:19mm}
+.qrtext{font-family:M;font-size:4.6pt;color:#6e625c;text-align:center;margin-top:1.4mm}
+.code{position:absolute;left:8mm;right:8mm;top:40mm;height:11.1mm;border-radius:2.2mm;background:#a8655e;color:#fbf8f4;display:flex;align-items:center;justify-content:space-between;padding:0 3.2mm 0 3.2mm}
+.code .l{font-family:M;font-size:5.6pt;line-height:1.25}.code .l b{display:block;font-family:C;font-weight:400;font-size:12pt;line-height:1}
+.code .c{font-family:M;font-weight:600;font-size:8.8pt;letter-spacing:.14em;border:.25mm dashed rgba(251,248,244,.6);border-radius:1.4mm;padding:1.2mm 2.1mm 1.2mm 2.5mm}
+.klein{position:absolute;left:0;right:0;top:52.6mm;text-align:center;font-family:M;font-size:4.2pt;color:#6e625c}
+</style></head><body>
+<div class="seite vorne">
+  <div class="punkt"></div><div class="bogen"></div><div class="bogen2"></div>
+  <svg class="kam" viewBox="-4 14 128 88" fill="none" stroke="#a8655e" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M10 30h18l8-12h28l8 12h18a10 10 0 0 1 10 10v44a10 10 0 0 1-10 10H10A10 10 0 0 1 0 84V40a10 10 0 0 1 10-10z"/><circle cx="50" cy="61" r="22"/><circle cx="50" cy="61" r="13"/><circle cx="85" cy="44" r="2.5"/></svg>
+  <div class="logo"><b>Schriefers</b><small>Fotografie</small></div>
+  <p class="claim">Baby · Familie · Babybauch · Paare</p>
+  <p class="orte">Wurmberg · Pforzheim · Leonberg · Rutesheim<br>Renningen · Heimsheim · Mühlacker &amp; Umgebung</p>
+</div>
+<div class="seite hinten">
+  <div>
+    <p class="name">Nicole Schriefers</p>
+    <p class="rolle">Fotografin</p>
+    <div class="kontakt">
+      <p><i><svg viewBox="0 0 24 24" fill="none" stroke="#a8655e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></i>kontakt@schriefers-fotografie.de</p>
+      <p><i><svg viewBox="0 0 24 24" fill="none" stroke="#a8655e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 0 0-7.8 13.5L3 21l4.6-1.2A9 9 0 1 0 12 3z"/><path d="M9 8.5c0 3.6 2.9 6.5 6.5 6.5l1-1.6-2-1-1 .9a4.8 4.8 0 0 1-2.8-2.8l.9-1-1-2z"/></svg></i><span>0175 4568227 · auch WhatsApp</span></p>
+      <p><i><svg viewBox="0 0 24 24" fill="none" stroke="#a8655e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg></i>www.schriefers-fotografie.de</p>
+    </div>
+  </div>
+  <div><div class="qr"><img src="qr.svg"></div><p class="qrtext">Zur Website</p></div>
+  <div class="code"><div class="l"><b>10 % für euch</b>auf euer erstes Fotoshooting</div><div class="c">MOMENTE10</div></div>
+  <p class="klein">Code bei der Anfrage angeben · nicht mit anderen Rabatten kombinierbar</p>
+</div>
+</body></html>

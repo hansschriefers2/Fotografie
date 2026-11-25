@@ -1,0 +1,174 @@
+---
+// Portfolio-Aktion (Inhalte in src/data/aktion.ts)
+import { Image } from "astro:assets";
+import Layout from "../layouts/Layout.astro";
+import WhatsappIcon from "../components/WhatsappIcon.astro";
+import { photos } from "../data/fotos";
+import { aktion, aktionsPreise } from "../data/aktion";
+import { euro, fotosInklusive } from "../data/preise";
+import { site, whatsappAktiv, whatsappHref } from "../config";
+
+if (!aktion.aktiv) return Astro.redirect("/preise/");
+
+const betreff = `${aktion.zeitraum}-Aktion`;
+const text = `Hallo ${site.firstName},
+
+wir haben Interesse an deiner ${aktion.zeitraum}-Aktion.
+
+Wer wir sind (Vornamen, Alter der Kinder bzw. Geburtstermin):
+
+Welches Fotoshooting uns interessiert:
+
+Unser Wunschzeitraum:
+
+Lieber draußen oder bei uns zu Hause:
+
+Das macht uns als Familie aus:
+
+Viele Grüße`;
+const mailHref = `mailto:${site.email}?subject=${encodeURIComponent(betreff)}&body=${encodeURIComponent(text)}`;
+
+const angaben = [
+  "wer ihr seid: Vornamen, Alter der Kinder bzw. euer Geburtstermin",
+  "welches Fotoshooting euch interessiert",
+  "euer Wunschzeitraum",
+  "ob ihr lieber draußen oder bei euch zu Hause fotografiert werden möchtet",
+  "ein, zwei Sätze, was euch als Familie ausmacht",
+  "gern ein schnelles Handyfoto von euch",
+];
+---
+
+<Layout
+  title={`${aktion.zeitraum}-Aktion`}
+  description={`${aktion.rabattProzent} % auf euer Fotoshooting bei ${site.name} – für Familien, die ihre Bilder mit anderen teilen mögen. Nur wenige Plätze.`}
+>
+  <!-- Hervorgehobener Kopfbereich (statt des normalen Seitenkopfs) -->
+  <section class="relative overflow-hidden bg-rose-deep pt-36 pb-16 text-cream sm:pt-44 sm:pb-20">
+    <div aria-hidden="true" class="absolute -top-24 -right-24 size-96 rounded-full bg-rose/40 blur-3xl"></div>
+    <div aria-hidden="true" class="absolute -bottom-32 left-1/3 size-80 rounded-full bg-ink/20 blur-3xl"></div>
+    <div class="container-page relative flex flex-col gap-10 lg:flex-row lg:items-end lg:justify-between">
+      <div>
+        <p class="text-xs font-semibold tracking-[0.25em] text-cream/80 uppercase">
+          {aktion.zeitraum} Fotoshootings · Wenige Plätze{aktion.bewerbungBisKurz && ` · Bis ${aktion.bewerbungBisKurz}`}
+        </p>
+        <h1 class="mt-4 max-w-3xl text-5xl text-cream sm:text-6xl">Eure Geschichte in meinem Portfolio</h1>
+        <p class="mt-6 max-w-2xl text-lg leading-relaxed text-cream/85">
+          Ich würde gern noch mehr echte Familienmomente auf meiner Website und bei Instagram zeigen. Wenn ihr mir
+          erlaubt, ausgewählte Fotos von euch zu veröffentlichen, bekommt ihr als Dankeschön {aktion.rabattProzent} %
+          auf euer Fotoshooting.
+        </p>
+      </div>
+      <div class="flex size-36 shrink-0 flex-col items-center justify-center rounded-full bg-cream text-rose-deep shadow-xl sm:size-44">
+        <span class="font-serif text-5xl leading-none sm:text-6xl">{aktion.rabattProzent} %</span>
+        <span class="mt-1 text-xs font-semibold tracking-[0.2em] uppercase">Rabatt</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="container-page py-16 sm:py-24">
+    <div class="grid items-start gap-14 lg:grid-cols-[6fr_5fr] lg:gap-20">
+      <!-- Preise -->
+      <div>
+        <p class="eyebrow">Eure Aktionspreise</p>
+        <h2 class="mt-4 text-4xl sm:text-5xl">{aktion.rabattProzent} % auf euer Fotoshooting</h2>
+        <ul class="mt-8 divide-y divide-ink/10 rounded-[1.75rem] bg-linen px-6 sm:px-8">
+          {
+            aktionsPreise.map((p) => (
+              <li class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 py-5">
+                <span>
+                  <span class="block font-serif text-2xl">{p.name}</span>
+                  <span class="text-sm text-ink-soft">{p.dauer} · {fotosInklusive} bearbeitete Fotos</span>
+                </span>
+                <span class="flex items-baseline gap-3">
+                  <span class="font-serif text-4xl text-rose-deep">{euro(p.aktionspreis)}</span>
+                  <s class="text-sm text-ink-soft">{euro(p.preis)}</s>
+                </span>
+              </li>
+            ))
+          }
+        </ul>
+        <p class="mt-6 font-serif text-xl text-rose-deep italic">
+          🎄 Übrigens: Ein Fotoshooting ist auch eine schöne Idee als Weihnachtsgeschenk –
+          <a href="/gutschein/" class="underline underline-offset-4 hover:text-ink">zum Gutschein</a>.
+        </p>
+        <p class="mt-4 text-sm leading-relaxed text-ink-soft">
+          Wie immer dabei: persönliches Vorgespräch, Shooting ohne Zeitdruck, private Online-Galerie und Anfahrt bis 25 km.
+          Der Rabatt gilt auf den Paketpreis; zusätzliche Fotos zum regulären Preis. Nicht mit anderen Rabatten oder Kombipaketen kombinierbar.
+        </p>
+      </div>
+
+      <!-- Bild -->
+      <div class="relative aspect-[4/5] overflow-hidden rounded-t-full">
+        <Image
+          src={photos.familie02.src}
+          alt={photos.familie02.alt}
+          widths={[500, 800, 1100]}
+          sizes="(min-width: 1024px) 40vw, 100vw"
+          class="absolute inset-0 h-full w-full bg-sand object-cover"
+          style={{ objectPosition: "55% 50%" }}
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- So funktioniert's -->
+  <section class="bg-rose/15 py-20 sm:py-28">
+    <div class="container-page grid gap-14 lg:grid-cols-2 lg:gap-20">
+      <div>
+        <p class="eyebrow">Was ich mir wünsche</p>
+        <h2 class="mt-4 text-4xl sm:text-5xl">Ein paar Bilder, die ich zeigen darf</h2>
+        <div class="mt-6 space-y-4 leading-relaxed text-ink-soft">
+          <p>
+            Ich wähle gemeinsam mit euch einige Lieblingsbilder aus, die ich auf meiner Website, bei Instagram und
+            Facebook zeigen darf. Namen, Wohnort oder Geburtsdaten veröffentliche ich nie.
+          </p>
+          <p>
+            Die Einwilligung halten wir vor dem Shooting im Vertrag fest. Alles andere bleibt wie immer: entspannt,
+            ehrlich und ganz in eurem Tempo.
+          </p>
+        </div>
+      </div>
+      <div>
+        <p class="eyebrow">So einfach geht's</p>
+        <h2 class="mt-4 text-4xl sm:text-5xl">Schreibt mir kurz</h2>
+        <p class="mt-6 leading-relaxed text-ink-soft">
+          Weil die Plätze begrenzt sind, freue ich mich über ein paar Zeilen von euch{
+            aktion.bewerbungBis ? ` bis zum ${aktion.bewerbungBis}` : ""
+          }:
+        </p>
+        <ul class="mt-6 space-y-3">
+          {
+            angaben.map((a) => (
+              <li class="flex gap-3 leading-relaxed text-ink-soft">
+                <span aria-hidden="true" class="text-rose-deep">✓</span>
+                {a}
+              </li>
+            ))
+          }
+        </ul>
+        <div class="mt-9 flex flex-col gap-3 sm:flex-row">
+          <a href={mailHref} class="btn-primary">Per E-Mail schreiben</a>
+          {whatsappAktiv ? (
+            <a
+              href={whatsappHref(`Hallo ${site.firstName}, wir haben Interesse an deiner ${aktion.zeitraum}-Aktion. Wir sind …`)}
+              target="_blank"
+              rel="noopener"
+              class="btn-ghost inline-flex items-center justify-center gap-2.5"
+            >
+              <WhatsappIcon />
+              Per WhatsApp schreiben
+            </a>
+          ) : (
+            <a href="/kontakt/" class="btn-ghost">Zum Kontaktformular</a>
+          )}
+        </div>
+        {whatsappAktiv && (
+          <p class="mt-3 text-sm text-ink-soft">
+            Oder ganz klassisch über das <a href="/kontakt/" class="underline underline-offset-2 hover:text-rose-deep">Kontaktformular</a>.
+          </p>
+        )}
+        <p class="mt-4 text-sm text-ink-soft">Ich melde mich bei allen persönlich zurück.</p>
+      </div>
+    </div>
+  </section>
+</Layout>

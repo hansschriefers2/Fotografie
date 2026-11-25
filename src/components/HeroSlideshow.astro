@@ -8,7 +8,7 @@ interface Props {
 }
 const { slides } = Astro.props;
 
-const INTERVAL = 6000;
+const INTERVAL = 5000;
 const bilder = await Promise.all(
   slides.map((s) => getImage({ src: s.src, widths: [960, 1600, 2400], format: "webp", quality: 85 })),
 );
@@ -46,7 +46,7 @@ const bilder = await Promise.all(
           height={slide.src.height}
           decoding="async"
           fetchpriority={i === 0 ? "high" : undefined}
-          class="h-full w-full object-cover"
+          class="h-full w-full object-cover text-transparent"
         />
       </div>
     ))
@@ -57,7 +57,7 @@ const bilder = await Promise.all(
 
   <div class="absolute inset-x-0 bottom-0 pb-24 sm:pb-28">
     <div class="container-page text-cream">
-      <p class="mb-4 text-xs font-semibold tracking-[0.3em] text-cream/85 uppercase">Baby · Familie · Babybauch</p>
+      <p class="mb-4 text-xs font-semibold tracking-[0.3em] text-cream/85 uppercase">Baby · Familie · Babybauch · Paare</p>
       <h1 class="max-w-3xl font-serif text-5xl leading-[1.02] sm:text-6xl lg:text-7xl">
         Erinnerungen, die <em class="font-light">mitwachsen</em>.
       </h1>
@@ -133,11 +133,16 @@ const bilder = await Promise.all(
     };
 
     const kenburns = () => {
-      slides.forEach((s, i) => {
-        const img = s.querySelector("img")!;
-        img.style.animation =
-          i === index && !reduced.matches ? `kenburns ${interval + 2000}ms ease-out forwards` : "";
-      });
+      // Nur das neue Bild startet den Zoom von vorn. Das ausblendende Bild behält seinen
+      // Zoom, sonst springt es während des Überblendens sichtbar zurück.
+      const img = slides[index].querySelector("img")!;
+      if (reduced.matches) {
+        img.style.animation = "";
+        return;
+      }
+      img.style.animation = "none";
+      void img.offsetWidth; // Animation zuverlässig neu starten
+      img.style.animation = `kenburns ${interval + 2000}ms ease-out forwards`;
     };
 
     const schedule = () => {

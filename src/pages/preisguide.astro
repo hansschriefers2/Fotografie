@@ -1,0 +1,419 @@
+---
+import { Image, getImage } from "astro:assets";
+import Layout from "../layouts/Layout.astro";
+import { nicole, photos } from "../data/fotos";
+import {
+  ablauf,
+  anzahlung,
+  anzahlungProzent,
+  euro,
+  ersparnis,
+  extraFoto,
+  extras,
+  faq,
+  fotosInklusive,
+  inklusive,
+  kombis,
+  shootings,
+} from "../data/preise";
+import { pixieset, site, telHref } from "../config";
+
+const jahr = new Date().getFullYear();
+const anfragen = (paket: string) =>
+  pixieset.buchungUrl ? "/buchen/" : `/kontakt/?paket=${encodeURIComponent(paket)}`;
+
+const richtig = [
+  "natürliche, ungestellte Bilder lieber mögt als steife Posen",
+  "euch entspannt begleitet fühlen und euch um nichts kümmern wollt",
+  "Erinnerungen sucht, die auch in 20 Jahren noch berühren",
+  "eure Kinder einfach Kinder sein lassen möchtet",
+];
+
+// Abschnitte: am Bildschirm luftig, im PDF jeweils auf einer neuen Seite
+const seite = "py-20 sm:py-28 print:break-before-page print:py-0";
+const vorschau = await getImage({ src: photos.familie11.src, width: 1200, height: 630, fit: "cover", format: "jpg" });
+---
+
+<!-- Nicht verlinkt & noindex: wird nur auf Anfrage per Link verschickt -->
+<Layout
+  title="Preisguide"
+  vorschaubild={vorschau.src}
+  noindex
+  description={`Preise und Pakete für Babybauch-, Newborn-, Familien- und Kindershootings bei ${site.name} – je ${fotosInklusive} Fotos inklusive.`}
+>
+  <!-- Titelseite -->
+  <section class="bg-linen pt-32 pb-20 sm:pt-40 sm:pb-28 print:bg-transparent print:pt-0 print:pb-0">
+    <div class="container-page grid items-center gap-12 lg:grid-cols-[6fr_5fr] lg:gap-20 print:block">
+      <div>
+        <p class="eyebrow">Preisguide {jahr}</p>
+        <h1 class="mt-4 text-5xl sm:text-7xl print:text-6xl">Eure Erinnerungen,<br /><em class="font-light">eure Geschichte</em>.</h1>
+        <p class="mt-6 max-w-xl text-lg leading-relaxed text-ink-soft">
+          Hier findet ihr alles, was ihr über ein Shooting bei mir wissen müsst: was immer dabei ist, wie die
+          Bildauswahl funktioniert und was eure Bilder kosten. Transparent und ohne Kleingedrucktes.
+        </p>
+        <p class="mt-4 text-sm tracking-wide text-ink-soft">Baby · Familie · Babybauch · Paare · {site.region}</p>
+        <div class="mt-9 flex flex-col gap-3 sm:flex-row print:hidden">
+          <a href="#shootings" class="btn-primary">Direkt zu den Preisen</a>
+        </div>
+      </div>
+      <div class="relative aspect-[4/5] overflow-hidden rounded-t-full print:rounded-tl-[6rem] print:rounded-tr-[1.25rem] print:rounded-br-[6rem] print:rounded-bl-[1.25rem] print:mt-12 print:aspect-[4/3]">
+        <Image
+          src={photos.familie11.src}
+          alt={photos.familie11.alt}
+          widths={[500, 800, 1100]}
+          sizes="(min-width: 1024px) 40vw, 100vw"
+          loading="eager"
+          class="absolute inset-0 h-full w-full bg-sand object-cover"
+          style={{ objectPosition: photos.familie11.fokus }}
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- Hallo -->
+  <section class={seite}>
+    <div class="container-page grid items-center gap-14 lg:grid-cols-2 lg:gap-20 print:block">
+      <div>
+        <p class="eyebrow">Schön, dass ihr hier seid</p>
+        <h2 class="mt-4 text-4xl sm:text-5xl">Ihr seid bei mir genau richtig, wenn ihr …</h2>
+        <ul class="mt-10 space-y-5">
+          {
+            richtig.map((r) => (
+              <li class="flex gap-4 border-b border-ink/10 pb-5 leading-relaxed text-ink-soft">
+                <span aria-hidden="true" class="text-rose-deep">✓</span>
+                {r}
+              </li>
+            ))
+          }
+        </ul>
+        <p class="mt-8 leading-relaxed text-ink-soft">
+          Ich bin {site.firstName}, selbst Mama von zwei Kindern und fotografiere seit über 20 Jahren. Ich weiß, wie
+          schnell diese Zeit vergeht und wie viel es bedeutet, sie in Bildern festzuhalten.
+        </p>
+        <p class="mt-6 font-serif text-3xl text-rose-deep italic">{site.firstName}</p>
+      </div>
+      <div class="grid grid-cols-2 gap-4 print:mt-8">
+        {
+          [photos.baby02, photos.familie06].map((p, i) => (
+            <div class:list={["relative aspect-[3/4] overflow-hidden rounded-2xl print:mt-0 print:aspect-[4/3]", { "mt-12": i === 0 }]}>
+              <Image
+                src={p.src}
+                alt={p.alt}
+                widths={[400, 700]}
+                sizes="(min-width: 1024px) 25vw, 50vw"
+                class="absolute inset-0 h-full w-full bg-sand object-cover"
+                style={{ objectPosition: p.fokus }}
+              />
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Immer inklusive + Bildauswahl -->
+  <section class:list={[seite, "bg-linen print:bg-transparent"]}>
+    <div class="container-page">
+      <div class="mx-auto max-w-2xl text-center">
+        <p class="eyebrow">Immer dabei</p>
+        <h2 class="mt-4 text-4xl sm:text-5xl">Das ist in jedem Shooting enthalten</h2>
+      </div>
+      <div class="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 print:mt-8 print:grid-cols-3 print:gap-3">
+        {
+          inklusive.map((x, i) => (
+            <article class="rounded-[1.5rem] bg-cream p-7 print:break-inside-avoid print:border print:border-ink/10 print:p-5">
+              <span class="font-serif text-4xl text-rose print:text-3xl">0{i + 1}</span>
+              <h3 class="mt-3 text-2xl print:mt-1 print:text-xl">{x.titel}</h3>
+              <p class="mt-2 leading-relaxed text-ink-soft print:text-sm">{x.text}</p>
+            </article>
+          ))
+        }
+      </div>
+
+      <div class="mt-20 rounded-[1.75rem] bg-ink p-8 text-cream sm:p-12 print:mt-8 print:break-inside-avoid print:p-8">
+        <p class="text-xs font-semibold tracking-[0.25em] text-rose uppercase">So funktioniert die Bildauswahl</p>
+        <div class="mt-6 grid gap-8 md:grid-cols-3 print:grid-cols-3">
+          <div>
+            <p class="font-serif text-5xl">{fotosInklusive}</p>
+            <p class="mt-2 leading-relaxed text-cream/80">
+              Fotos sind im Preis enthalten. Ihr sucht sie euch selbst in eurer Online-Galerie aus.
+            </p>
+          </div>
+          <div>
+            <p class="font-serif text-5xl">+ {euro(extraFoto)}</p>
+            <p class="mt-2 leading-relaxed text-cream/80">kostet jedes weitere Lieblingsbild, das ihr dazunehmen möchtet.</p>
+          </div>
+          <div>
+            <p class="font-serif text-5xl">Alle</p>
+            <p class="mt-2 leading-relaxed text-cream/80">
+              Ihr könnt euch nicht entscheiden? Dann nehmt einfach alle gelungenen Fotos zum Paketpreis.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Shootings -->
+  <section id="shootings" class={seite}>
+    <div class="container-page">
+      <div class="mx-auto max-w-2xl text-center print:hidden">
+        <p class="eyebrow">Preise</p>
+        <h2 class="mt-4 text-4xl sm:text-5xl">Eure Shootings</h2>
+        <p class="mt-5 leading-relaxed text-ink-soft">Alle Preise sind Endpreise, digitale Fotos in voller Auflösung.</p>
+      </div>
+
+      <!-- Im PDF: eine Seite pro Shooting, großes Foto oben -->
+      <div class="mt-16 space-y-20 print:mt-0 print:space-y-0">
+        {
+          shootings.map((s, i) => (
+            <article
+              id={s.id}
+              class:list={[
+                "grid scroll-mt-28 items-center gap-10 lg:grid-cols-2 lg:gap-16 print:block print:break-inside-avoid",
+                { "print:break-before-page": i > 0 },
+              ]}
+            >
+              <div
+                class:list={[
+                  "relative overflow-hidden print:mb-5",
+                  // Querformat-Fotos im Originalformat (3:2), Hochformat im Bogen – so wird nichts abgeschnitten
+                  s.foto.src.width > s.foto.src.height
+                    ? "aspect-[3/2] rounded-[2rem]"
+                    : "aspect-[4/5] rounded-t-full print:rounded-[1.5rem] print:mx-auto print:max-w-[45%]",
+                  { "lg:order-2": i % 2 === 1 },
+                ]}
+              >
+                <Image
+                  src={s.foto.src}
+                  alt={s.foto.alt}
+                  widths={[500, 800, 1100]}
+                  sizes="(min-width: 1024px) 45vw, 100vw"
+                  class="absolute inset-0 h-full w-full bg-sand object-cover"
+                  style={s.foto.fokus ? { objectPosition: s.foto.fokus } : undefined}
+                />
+              </div>
+              <div>
+                <div class="flex flex-wrap items-center gap-3">
+                  <p class="eyebrow">{s.untertitel}</p>
+                  {s.beliebt && (
+                    <span class="rounded-full bg-rose px-3 py-0.5 text-[0.65rem] font-semibold tracking-wider text-ink uppercase">
+                      Beliebt
+                    </span>
+                  )}
+                </div>
+                <h3 class="mt-3 text-4xl sm:text-5xl">{s.name}</h3>
+                <p class="mt-5 leading-relaxed text-ink-soft">{s.text}</p>
+                <ul class="mt-6 space-y-2 text-ink-soft">
+                  {s.leistungen.map((l) => (
+                    <li class="flex gap-3">
+                      <span aria-hidden="true" class="text-rose-deep">✓</span>
+                      {l}
+                    </li>
+                  ))}
+                </ul>
+
+                <dl class="mt-8 divide-y divide-ink/10 rounded-2xl border border-ink/10 bg-white/60 px-6">
+                  <div class="flex items-baseline justify-between gap-6 py-4">
+                    <dt class="text-ink-soft">
+                      {fotosInklusive} Fotos, digital <span class="text-sm">· {s.dauer}</span>
+                    </dt>
+                    <dd class="shrink-0 font-serif text-4xl">{euro(s.preis)}</dd>
+                  </div>
+                  <div class="flex justify-between gap-6 py-3 text-sm">
+                    <dt class="text-ink-soft">Jedes weitere Foto</dt>
+                    <dd class="shrink-0 font-semibold">{euro(extraFoto)}</dd>
+                  </div>
+                  <div class="flex justify-between gap-6 py-3 text-sm">
+                    <dt class="text-ink-soft">Alle gelungenen Fotos</dt>
+                    <dd class="shrink-0 font-semibold">{euro(s.allePreis)}</dd>
+                  </div>
+                </dl>
+                <a href={anfragen(s.name)} class="btn-primary mt-8 print:hidden">
+                  {s.name} anfragen
+                </a>
+              </div>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Kombipakete -->
+  <section class:list={[seite, "bg-sand/50 print:bg-transparent"]}>
+    <div class="container-page">
+      <div class="mx-auto max-w-2xl text-center">
+        <p class="eyebrow">Kombipakete</p>
+        <h2 class="mt-4 text-4xl sm:text-5xl">Eure Geschichte am Stück</h2>
+        <p class="mt-5 leading-relaxed text-ink-soft">
+          Wer mehrere Kapitel festhalten möchte, spart mit einem Kombipaket. Die Shootings finden zu den passenden
+          Zeitpunkten statt, ihr bucht nur einmal.
+        </p>
+      </div>
+      <div class="mt-14 grid gap-6 md:grid-cols-2 print:mt-10">
+        {
+          kombis.map((k, i) => (
+            <article
+              class:list={[
+                "flex flex-col rounded-[1.75rem] p-8 sm:p-10 print:break-inside-avoid",
+                i === 1 ? "bg-ink text-cream" : "bg-cream",
+              ]}
+            >
+              <h3 class="text-3xl sm:text-4xl">{k.name}</h3>
+              <p class:list={["mt-2 text-sm tracking-wide", i === 1 ? "text-cream/70" : "text-ink-soft"]}>
+                {k.enthalten.map((s) => s.name).join(" + ")}
+              </p>
+              <p class:list={["mt-5 flex-1 leading-relaxed", i === 1 ? "text-cream/85" : "text-ink-soft"]}>{k.text}</p>
+              <div class="mt-8 flex flex-wrap items-end justify-between gap-4">
+                <div>
+                  <p class="font-serif text-5xl">{euro(k.preis)}</p>
+                  <p class:list={["mt-1 text-sm", i === 1 ? "text-rose" : "text-rose-deep"]}>
+                    statt {euro(k.preis + ersparnis(k))} – ihr spart {euro(ersparnis(k))}
+                  </p>
+                </div>
+                <a
+                  href={anfragen(k.name)}
+                  class:list={[
+                    "btn print:hidden",
+                    i === 1 ? "bg-cream text-ink hover:bg-rose" : "bg-ink text-cream hover:bg-rose-deep",
+                  ]}
+                >
+                  Anfragen
+                </a>
+              </div>
+            </article>
+          ))
+        }
+      </div>
+
+      <div class="mt-16 grid gap-16 lg:grid-cols-2 print:mt-0 print:break-before-page print:grid-cols-2 print:gap-8">
+        <div>
+          <p class="eyebrow">Extras</p>
+          <h2 class="mt-4 text-4xl">Zusätzlich möglich</h2>
+          <dl class="mt-8 divide-y divide-ink/10 border-y border-ink/10">
+            {
+              extras.map((e) => (
+                <div class="flex justify-between gap-6 py-4">
+                  <dt class="text-ink-soft">{e.name}</dt>
+                  <dd class="shrink-0 font-semibold">{e.price}</dd>
+                </div>
+              ))
+            }
+          </dl>
+        </div>
+        <div>
+          <p class="eyebrow">Von der Anfrage zu euren Bildern</p>
+          <h2 class="mt-4 text-4xl">So geht's weiter</h2>
+          <ol class="mt-8 space-y-5">
+            {
+              ablauf.map((a, i) => (
+                <li class="flex gap-5">
+                  <span class="font-serif text-3xl leading-none text-rose">0{i + 1}</span>
+                  <div>
+                    <h3 class="font-sans text-base font-semibold">{a.titel}</h3>
+                    <p class="mt-1 leading-relaxed text-ink-soft">{a.text}</p>
+                  </div>
+                </li>
+              ))
+            }
+          </ol>
+        </div>
+      </div>
+
+      <div class="mt-12 rounded-[1.75rem] border border-ink/10 bg-cream p-8 sm:p-10 print:mt-8 print:break-inside-avoid print:p-6">
+        <div class="flex flex-col gap-6 md:flex-row md:items-start md:gap-12 print:flex-row print:gap-8">
+          <div class="shrink-0">
+            <p class="eyebrow">Terminreservierung</p>
+            <p class="mt-3 font-serif text-6xl print:text-5xl">{anzahlungProzent} %</p>
+            <p class="mt-1 text-sm text-ink-soft">Anzahlung</p>
+          </div>
+          <ul class="space-y-3 text-ink-soft print:space-y-1.5 print:text-sm">
+            {
+              anzahlung.map((a) => (
+                <li class="flex gap-3">
+                  <span aria-hidden="true" class="text-rose-deep">✓</span>
+                  {a}
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class={seite}>
+    <div class="container-page">
+      <div class="mx-auto max-w-2xl text-center">
+        <p class="eyebrow">Häufige Fragen</p>
+        <h2 class="mt-4 text-4xl sm:text-5xl">Gut zu wissen</h2>
+      </div>
+      <dl class="mx-auto mt-14 grid max-w-5xl gap-x-12 gap-y-10 md:grid-cols-2 print:mt-6 print:grid-cols-2 print:gap-x-8 print:gap-y-5">
+        {
+          faq.map((f) => (
+            <div class="border-t border-ink/15 pt-6 print:break-inside-avoid print:pt-4">
+              <dt class="font-serif text-2xl print:text-lg print:leading-snug">{f.q}</dt>
+              <dd class="mt-3 leading-relaxed text-ink-soft print:mt-1.5 print:text-[0.8rem] print:leading-normal">{f.a}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+  </section>
+
+  <!-- Abschluss -->
+  <section class="bg-linen py-20 sm:py-28 print:break-before-page print:bg-transparent print:py-0">
+    <div class="container-page grid items-center gap-12 lg:grid-cols-[5fr_6fr] lg:gap-20 print:block">
+      <div class="relative aspect-[4/5] overflow-hidden rounded-t-full print:mb-10 print:aspect-[3/4] print:max-w-[55%]">
+        <Image
+          src={nicole.kniend.src}
+          alt={nicole.kniend.alt}
+          widths={[500, 800, 1100]}
+          sizes="(min-width: 1024px) 40vw, 100vw"
+          class="absolute inset-0 h-full w-full bg-sand object-cover"
+          style={{ objectPosition: nicole.kniend.fokus }}
+        />
+      </div>
+      <div>
+        <p class="eyebrow">Lasst uns loslegen</p>
+        <h2 class="mt-4 text-4xl sm:text-5xl">Ich freue mich darauf, euch kennenzulernen.</h2>
+        <p class="mt-5 max-w-xl leading-relaxed text-ink-soft">
+          Nicht das passende Paket dabei oder noch Fragen? Schreibt mir einfach, gemeinsam finden wir, was zu euch
+          passt.
+        </p>
+        <ul class="mt-8 space-y-2 text-lg">
+          <li><a href={`mailto:${site.email}`} class="hover:text-rose-deep">{site.email}</a></li>
+          <li><a href={telHref} class="hover:text-rose-deep">{site.phone}</a></li>
+          <li class="hidden print:block">{Astro.site?.host}</li>
+        </ul>
+        <div class="mt-9 flex flex-col gap-3 sm:flex-row print:hidden">
+          <a href={anfragen("Preisguide")} class="btn-primary">Shooting anfragen</a>
+        </div>
+        <p class="mt-10 text-xs text-ink-soft">
+          Stand {jahr}. Es gelten die <a href="/agb/" class="underline underline-offset-2">AGB</a>.
+          {/* TODO: ggf. Hinweis „Gemäß § 19 UStG wird keine Umsatzsteuer berechnet.“ – mit Steuerberatung klären */}
+        </p>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<script>
+  // Vor dem Drucken/Speichern alle Bilder laden (sonst fehlen nicht gescrollte Bilder im PDF)
+  const ladeAlleBilder = () => {
+    const imgs = [...document.querySelectorAll<HTMLImageElement>("main img")];
+    imgs.forEach((img) => (img.loading = "eager"));
+    return Promise.all(imgs.map((img) => (img.complete ? Promise.resolve() : img.decode().catch(() => {}))));
+  };
+
+  document.querySelectorAll("[data-pdf]").forEach((b) =>
+    b.addEventListener("click", async () => {
+      await ladeAlleBilder();
+      window.print();
+    }),
+  );
+  window.addEventListener("beforeprint", () => void ladeAlleBilder());
+  if (new URLSearchParams(location.search).has("pdf")) void ladeAlleBilder();
+</script>

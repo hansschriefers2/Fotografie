@@ -1,0 +1,19 @@
+---
+// Schwebender WhatsApp-Knopf unten rechts – immer sichtbar (nicht auf Druckseiten).
+import WhatsappIcon from "./WhatsappIcon.astro";
+import { whatsappAktiv, whatsappHref } from "../config";
+---
+
+{
+  whatsappAktiv && (
+    <a
+      href={whatsappHref()}
+      target="_blank"
+      rel="noopener"
+      aria-label="Per WhatsApp schreiben"
+      class="fixed right-4 bottom-[max(1rem,env(safe-area-inset-bottom))] z-30 flex size-13 items-center justify-center rounded-full bg-rose-deep text-cream shadow-[0_6px_20px_rgba(63,53,49,0.28)] transition-colors hover:bg-ink sm:right-6 sm:bottom-6 print:hidden [&_svg]:size-[1.65rem]"
+    >
+      <WhatsappIcon />
+    </a>
+  )
+}

@@ -1,0 +1,154 @@
+---
+// Slider mit Kundenstimmen. Zeigt nur Einträge mit Text; lokal (dev) zusätzlich Platzhalter.
+import { Image } from "astro:assets";
+import { bewertungen } from "../data/bewertungen";
+
+interface Props {
+  /** Mit welcher Bewertung der Slider beginnt (z. B. auf „Über mich“ eine andere als auf der Startseite) */
+  start?: number;
+}
+const { start = 0 } = Astro.props;
+const dev = import.meta.env.DEV;
+const gedreht = [...bewertungen.slice(start), ...bewertungen.slice(0, start)];
+const eintraege = gedreht
+  .filter((b) => b.text.trim() || dev)
+  .map((b) => ({
+    ...b,
+    platzhalter: !b.text.trim(),
+    text: b.text.trim() || "Platzhalter – hier steht später die echte Rückmeldung der Familie. Wird erst angezeigt, wenn ein Text eingetragen ist.",
+    name: b.name.trim() || (b.text.trim() ? "" : "Name der Familie"),
+  }));
+---
+
+{
+  eintraege.length > 0 && (
+    <section id="stimmen" class="bg-sand/40 py-24 sm:py-32" aria-roledescription="Karussell" aria-label="Kundenstimmen" data-bewertungen>
+      <div class="container-page">
+        <div class="mx-auto max-w-2xl text-center">
+          <p class="eyebrow">Kundenstimmen</p>
+          <h2 class="mt-4 text-4xl sm:text-5xl">Was Familien sagen</h2>
+        </div>
+
+        <div class="relative mx-auto mt-14 max-w-3xl">
+          <div
+            class="flex snap-x snap-mandatory overflow-x-auto scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            data-track
+          >
+            {eintraege.map((b, i) => (
+              <figure
+                class="w-full shrink-0 snap-center px-2 text-center sm:px-10"
+                aria-roledescription="Folie"
+                aria-label={`${i + 1} von ${eintraege.length}`}
+              >
+                <span aria-hidden="true" class="block font-serif text-6xl leading-none text-rose">
+                  „
+                </span>
+                <blockquote
+                  class:list={[
+                    "mt-2 font-serif text-lg leading-snug text-ink sm:text-xl",
+                    { "rounded-2xl border border-dashed border-rose-deep/50 p-6 text-ink-soft italic": b.platzhalter },
+                  ]}
+                >
+                  {b.text}
+                </blockquote>
+                <figcaption class="mt-8 inline-flex items-center gap-3 text-left">
+                  {b.foto ? (
+                    <Image
+                      src={b.foto}
+                      alt=""
+                      width={128}
+                      height={128}
+                      class="size-[58px] shrink-0 rounded-full object-cover"
+                    />
+                  ) : (
+                    <span
+                      aria-hidden="true"
+                      class="flex size-[58px] shrink-0 items-center justify-center rounded-full bg-sand font-serif text-base text-ink-soft italic"
+                    >
+                      {b.name ? b.name.split(" ").filter((w) => /^[A-ZÄÖÜ]/.test(w)).slice(0, 2).map((w) => w[0]).join("&") : "♡"}
+                    </span>
+                  )}
+                  <span>
+                    {b.name && <span class="block text-sm font-semibold text-ink">{b.name}</span>}
+                    <span class="block text-xs text-ink-soft">{b.anlass}</span>
+                  </span>
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+
+          {eintraege.length > 1 && (
+            <div class="mt-10 flex items-center justify-center gap-6">
+              <button
+                type="button"
+                class="flex size-11 items-center justify-center rounded-full border border-ink/15 text-ink transition-colors hover:border-rose-deep hover:text-rose-deep"
+                aria-label="Vorherige Bewertung"
+                data-prev
+              >
+                <svg viewBox="0 0 24 24" class="size-5" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                  <path d="M15 6l-6 6 6 6" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </button>
+              <div class="flex gap-2.5">
+                {eintraege.map((_, i) => (
+                  <button
+                    type="button"
+                    class="h-1.5 w-6 rounded-full bg-ink/15 transition-colors data-[aktiv]:bg-rose-deep"
+                    aria-label={`Bewertung ${i + 1} anzeigen`}
+                    data-dot={i}
+                  />
+                ))}
+              </div>
+              <button
+                type="button"
+                class="flex size-11 items-center justify-center rounded-full border border-ink/15 text-ink transition-colors hover:border-rose-deep hover:text-rose-deep"
+                aria-label="Nächste Bewertung"
+                data-next
+              >
+                <svg viewBox="0 0 24 24" class="size-5" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                  <path d="M9 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+<script>
+  document.querySelectorAll<HTMLElement>("[data-bewertungen]").forEach((root) => {
+    const track = root.querySelector<HTMLElement>("[data-track]");
+    if (!track) return;
+    const slides = [...track.children] as HTMLElement[];
+    const dots = [...root.querySelectorAll<HTMLElement>("[data-dot]")];
+    if (slides.length < 2) return;
+
+    let aktiv = 0;
+    const zeige = (i: number) => {
+      aktiv = (i + slides.length) % slides.length;
+      track.scrollTo({ left: slides[aktiv].offsetLeft - track.offsetLeft, behavior: "smooth" });
+    };
+    const markiere = () => {
+      const i = Math.round(track.scrollLeft / track.clientWidth);
+      aktiv = i;
+      dots.forEach((d, k) => d.toggleAttribute("data-aktiv", k === i));
+    };
+    track.addEventListener("scroll", () => requestAnimationFrame(markiere), { passive: true });
+    markiere();
+
+    root.querySelector("[data-prev]")?.addEventListener("click", () => zeige(aktiv - 1));
+    root.querySelector("[data-next]")?.addEventListener("click", () => zeige(aktiv + 1));
+    dots.forEach((d, k) => d.addEventListener("click", () => zeige(k)));
+
+    // Automatisch weiterblättern – pausiert bei Maus/Fokus und bei „weniger Bewegung“
+    const ruhig = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let pause = false;
+    root.addEventListener("mouseenter", () => (pause = true));
+    root.addEventListener("mouseleave", () => (pause = false));
+    root.addEventListener("focusin", () => (pause = true));
+    root.addEventListener("focusout", () => (pause = false));
+    if (!ruhig) setInterval(() => !pause && !document.hidden && zeige(aktiv + 1), 7000);
+  });
+</script>

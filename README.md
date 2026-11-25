@@ -16,7 +16,7 @@ npm run preview  # gebaute Seite lokal ansehen
 | Datei | Inhalt |
 | --- | --- |
 | `src/config.ts` | Name, Adresse, E-Mail, Telefon, Region, **Pixieset-Links** |
-| `src/data/preise.ts` | Pakete, Preise, Extras, FAQ |
+| `src/data/preise.ts` | Preise, Kombipakete, Extras, FAQ – für Preisguide (`/preisguide/`) und Preisvorschau auf der Startseite |
 | `src/data/fotos.ts` + `src/assets/{baby,familie,schwangerschaft}/` | Bilder, Alt-Texte, Slideshow-Auswahl |
 | `src/styles/global.css` (`@theme`) | Farben & Schriften |
 | `src/pages/ueber-mich.astro` | Text über dich, Porträtfoto |

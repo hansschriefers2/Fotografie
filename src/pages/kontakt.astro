@@ -1,10 +1,11 @@
 ---
 import { Image } from "astro:assets";
 import Layout from "../layouts/Layout.astro";
+import WhatsappIcon from "../components/WhatsappIcon.astro";
 import PageHeader from "../components/PageHeader.astro";
 import PixiesetEmbed from "../components/PixiesetEmbed.astro";
-import { photos } from "../data/fotos";
-import { pixieset, site, telHref } from "../config";
+import nicoleRund from "../assets/ich/nicole-rund.jpg";
+import { orteKurz, pixieset, site, telHref, weitereRegionen, whatsappAktiv, whatsappHref } from "../config";
 
 // Die Seite ist rein statisch (IONOS-Webspace). Anfragen laufen daher über das
 // Pixieset-Kontaktformular – oder, solange keins eingerichtet ist, per E-Mail.
@@ -28,7 +29,16 @@ const mailHref = `mailto:${site.email}?subject=${encodeURIComponent(betreff)}&bo
   <section class="container-page grid gap-16 py-16 sm:py-24 lg:grid-cols-[1fr_22rem]">
     {
       pixieset.kontaktformularUrl ? (
-        <PixiesetEmbed url={pixieset.kontaktformularUrl} titel="Kontaktformular" />
+        <div>
+          <p
+            class="mb-6 hidden rounded-[1.25rem] bg-rose/15 px-6 py-4 leading-relaxed text-ink"
+            data-preisguide-hinweis
+          >
+            <strong class="font-semibold">Preisguide anfordern:</strong> Schreibt mir im Formular kurz, welches Shooting
+            euch interessiert. Ich schicke euch den Preisguide dann persönlich per E-Mail zu.
+          </p>
+          <PixiesetEmbed url={pixieset.kontaktformularUrl} titel="Kontaktformular" />
+        </div>
       ) : (
         <div class="rounded-[1.75rem] bg-linen p-8 sm:p-12">
           <p class="eyebrow" data-paket-hinweis hidden />
@@ -59,21 +69,33 @@ const mailHref = `mailto:${site.email}?subject=${encodeURIComponent(betreff)}&bo
     }
 
     <aside class="space-y-8">
-      <div class="relative hidden aspect-[3/4] overflow-hidden rounded-t-full lg:block">
-        <Image
-          src={photos.baby04.src}
-          alt={photos.baby04.alt}
-          widths={[352, 704]}
-          sizes="352px"
-          class="absolute inset-0 h-full w-full bg-sand object-cover"
-        />
+      <!-- Persönlich: wer antwortet -->
+      <div class="flex items-center gap-5 rounded-[1.75rem] bg-linen p-6">
+        <div class="relative size-24 shrink-0 overflow-hidden rounded-full">
+          <Image src={nicoleRund} alt="Nicole Schriefers" widths={[192, 288]} sizes="96px" class="absolute inset-0 h-full w-full bg-sand object-cover" />
+        </div>
+        <div>
+          <p class="leading-relaxed text-ink">Ich freue mich über eure Fragen, Wünsche oder einfach ein kurzes Hallo.</p>
+        </div>
       </div>
       <div>
         <h2 class="eyebrow font-sans">Direkt erreichen</h2>
+        {whatsappAktiv && (
+          <a
+            href={whatsappHref()}
+            target="_blank"
+            rel="noopener"
+            class="mt-4 inline-flex items-center gap-2.5 rounded-full border border-ink/15 px-5 py-2.5 text-sm font-medium text-ink transition-colors hover:border-rose-deep hover:text-rose-deep"
+          >
+            <WhatsappIcon />
+            Per WhatsApp schreiben
+          </a>
+        )}
         <ul class="mt-4 space-y-3 text-ink-soft">
           <li><a href={`mailto:${site.email}`} class="break-all hover:text-ink">{site.email}</a></li>
           <li><a href={telHref} class="hover:text-ink">{site.phone}</a></li>
-          <li>{site.region}</li>
+          <li>{site.region}, z. B. {orteKurz}</li>
+          <li>Regelmäßig auch in {weitereRegionen.join(" und ")}</li>
         </ul>
       </div>
     </aside>
@@ -92,5 +114,11 @@ const mailHref = `mailto:${site.email}?subject=${encodeURIComponent(betreff)}&bo
       hinweis.textContent = `Paket: ${paket}`;
       hinweis.hidden = false;
     }
+  }
+</script>
+
+<script>
+  if (new URLSearchParams(location.search).has("preisguide")) {
+    document.querySelector("[data-preisguide-hinweis]")?.classList.remove("hidden");
   }
 </script>

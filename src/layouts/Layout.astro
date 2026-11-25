@@ -2,22 +2,30 @@
 import "../styles/global.css";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
+import Kontaktleiste from "../components/Kontaktleiste.astro";
 import { site } from "../config";
 
 interface Props {
   title?: string;
   description?: string;
   noindex?: boolean;
+  /** Eigenes Vorschaubild für WhatsApp & Co. (Pfad, z. B. aus getImage) – sonst /og-image.jpg */
+  vorschaubild?: string;
 }
 
-const { title, description = site.beschreibung, noindex = false } = Astro.props;
+const { title, description = site.beschreibung, noindex = false, vorschaubild } = Astro.props;
 const seitenTitel = title ? `${title} | ${site.name}` : `${site.name} – ${site.tagline}`;
 const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : undefined;
-const ogImage = Astro.site ? new URL("/og-image.jpg", Astro.site).href : "/og-image.jpg";
+// Druckvorlagen (Guides, Preisguide) ohne Einblend-Effekte und Kontaktleiste
+const pfad = Astro.url.pathname;
+const druckseite = pfad.startsWith("/guide/") || pfad.startsWith("/preisguide") || pfad.startsWith("/gutschein/vorlage");
+const ohneLeiste = druckseite;
+const ogPfad = vorschaubild ?? "/og-image.jpg";
+const ogImage = Astro.site ? new URL(ogPfad, Astro.site).href : ogPfad;
 ---
 
 <!doctype html>
-<html lang="de" class="h-full antialiased">
+<html lang="de" class="laedt h-full antialiased">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -34,7 +42,20 @@ const ogImage = Astro.site ? new URL("/og-image.jpg", Astro.site).href : "/og-im
     <meta property="og:image" content={ogImage} />
     <meta property="og:image:alt" content={`${site.name} – ${site.tagline}`} />
     <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <!-- Safari startet Übergänge beim Laden bei Standardwerten (Logo kurz blau, alle Slideshow-Fotos
+         kurz sichtbar) – daher Übergänge erst erlauben, wenn die Seite geladen ist -->
+    <style is:inline>html.laedt *,html.laedt *::before,html.laedt *::after{transition:none!important}</style>
+    <script is:inline>
+      (() => {
+        const fertig = () =>
+          requestAnimationFrame(() => requestAnimationFrame(() => document.documentElement.classList.remove("laedt")));
+        addEventListener("load", fertig);
+        setTimeout(fertig, 3000); // spätestens nach 3 Sekunden, auch bei langsamem Netz
+      })();
+    </script>
   </head>
   <body class="flex min-h-full flex-col">
     <a
@@ -48,5 +69,36 @@ const ogImage = Astro.site ? new URL("/og-image.jpg", Astro.site).href : "/og-im
       <slot />
     </main>
     <Footer />
+    {!ohneLeiste && <Kontaktleiste />}
+    {
+      !druckseite && (
+        <script is:inline>
+          // Sanftes Einblenden beim Scrollen – nur für Inhalte, die beim Laden noch nicht zu sehen sind
+          (() => {
+            if (matchMedia("(prefers-reduced-motion: reduce)").matches || !("IntersectionObserver" in window)) return;
+            const io = new IntersectionObserver(
+              (eintraege) =>
+                eintraege.forEach((e) => {
+                  if (!e.isIntersecting) return;
+                  e.target.classList.add("sichtbar");
+                  io.unobserve(e.target);
+                }),
+              { rootMargin: "0px 0px -8% 0px" },
+            );
+            const ziele = document.querySelectorAll(
+              "main section:not([data-slideshow]) .container-page > *, main section:not([data-slideshow]) .container-page > :is(div, ol, ul) > *",
+            );
+            ziele.forEach((el) => {
+              if (el.closest(".einblenden") || el.getBoundingClientRect().top < innerHeight) return;
+              // Geschwister leicht versetzt einblenden
+              const nr = [...el.parentElement.children].indexOf(el);
+              el.style.setProperty("--verzug", `${Math.min(nr, 3) * 110}ms`);
+              el.classList.add("einblenden");
+              io.observe(el);
+            });
+          })();
+        </script>
+      )
+    }
   </body>
 </html>

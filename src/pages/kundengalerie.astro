@@ -17,7 +17,7 @@ const vorteile = [
   <PageHeader
     eyebrow="Kundengalerie"
     title="Eure Bilder"
-    intro="Eure Bilder liegen in einer privaten, passwortgeschützten Online-Galerie. Den direkten Link und das Passwort bekommt ihr nach dem Shooting per E-Mail."
+    intro="Eure Bilder liegen in einer privaten, passwortgeschützten Online-Galerie. Den Link, den Namen der Galerie und das Passwort bekommt ihr nach dem Shooting per E-Mail."
   />
   <section class="container-page grid items-center gap-14 py-16 sm:py-24 lg:grid-cols-2 lg:gap-20">
     <div>
@@ -36,9 +36,25 @@ const vorteile = [
       </ul>
       {
         pixieset.galerieUrl ? (
-          <a class="btn-primary mt-10" href={pixieset.galerieUrl} target="_blank" rel="noopener">
-            Zu den Galerien
-          </a>
+          <form class="mt-10 max-w-md" data-galerie-form data-basis={pixieset.galerieUrl}>
+            <label for="galerie" class="block text-sm font-semibold text-ink">Name eurer Galerie</label>
+            <div class="mt-2 flex flex-col gap-3 sm:flex-row">
+              <input
+                id="galerie"
+                name="galerie"
+                required
+                autocomplete="off"
+                autocapitalize="none"
+                spellcheck="false"
+                placeholder="z. B. familiemueller"
+                class="min-w-0 flex-1 rounded-full border border-ink/20 bg-cream px-5 py-3 text-ink placeholder:text-ink-soft/60 focus:border-rose-deep focus:outline-none"
+              />
+              <button type="submit" class="btn-primary shrink-0">Zur Galerie</button>
+            </div>
+            <p class="mt-4 text-sm leading-relaxed text-ink-soft">
+              Danach fragt die Galerie nach eurem Passwort. Noch schneller geht es direkt über den Link in meiner E-Mail.
+            </p>
+          </form>
         ) : (
           <p class="mt-10 text-ink-soft">Der Galerie-Link wird hier ergänzt, sobald er eingerichtet ist.</p>
         )
@@ -55,3 +71,22 @@ const vorteile = [
     </div>
   </section>
 </Layout>
+
+<script>
+  // Galerie-Namen in die Pixieset-Adresse umwandeln, z. B. „Familie Müller“ → …/familiemuller/
+  const form = document.querySelector<HTMLFormElement>("[data-galerie-form]");
+  form?.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const eingabe = new FormData(form).get("galerie")?.toString() ?? "";
+    // Falls jemand den kompletten Link einfügt, nur den Galerie-Teil nehmen
+    const teil = eingabe.trim().replace(/^https?:\/\/[^/]+\//i, "").split(/[/?#]/)[0];
+    const name = teil
+      .toLowerCase()
+      .replace(/ä/g, "a").replace(/ö/g, "o").replace(/ü/g, "u").replace(/ß/g, "ss")
+      .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9-]+/g, "");
+    if (!name) return;
+    const basis = (form.dataset.basis ?? "").replace(/\/?$/, "/");
+    window.location.href = `${basis}${name}/`;
+  });
+</script>

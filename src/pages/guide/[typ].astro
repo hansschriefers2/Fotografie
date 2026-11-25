@@ -1,0 +1,357 @@
+---
+// Shooting-Guides je Anlass – nicht verlinkt & noindex, werden nach der Buchung per Link oder PDF verschickt.
+// Inhalte: src/data/guides.ts (je Anlass) und src/data/styleguide.ts (Farben & Styling für alle).
+import { Image, getImage } from "astro:assets";
+import Layout from "../../layouts/Layout.astro";
+import { guides, type Guide } from "../../data/guides";
+import { lieberNicht, paletten, regeln } from "../../data/styleguide";
+import { site, telHref } from "../../config";
+
+export function getStaticPaths() {
+  return guides.map((guide) => ({ params: { typ: guide.id }, props: { guide } }));
+}
+
+const { guide } = Astro.props as { guide: Guide };
+const jahr = new Date().getFullYear();
+
+// Passende Palette zuerst zeigen (ohne Hervorhebung)
+const farben = [...paletten].sort((a, b) => Number(b.name === guide.palette) - Number(a.name === guide.palette));
+
+// Abschnitte: am Bildschirm luftig, im PDF jeweils auf einer neuen Seite
+const seite = "py-20 sm:py-28 print:break-before-page print:py-0";
+const karte = "rounded-[1.5rem] bg-cream p-7 print:break-inside-avoid print:border print:border-ink/10 print:p-5";
+// Vorschaubild beim Teilen (WhatsApp, E-Mail): Titelfoto des Guides im Format 1200 × 630
+const vorschau = await getImage({ src: guide.fotos.titel.src, width: 1200, height: 630, fit: "cover", format: "jpg" });
+// Linien-Symbole für den Ablauf (Lucide, ISC-Lizenz)
+const ablaufIcons: Record<string, string> = {
+  nachricht: `<path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>`,
+  haus: `<path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>`,
+  herz: `<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>`,
+  bild: `<rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>`,
+  kalender: `<path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/>`,
+  ort: `<path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/>`,
+  kamera: `<path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/>`,
+  sonne: `<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>`,
+  kaffee: `<path d="M10 2v2"/><path d="M14 2v2"/><path d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1"/><path d="M6 2v2"/>`,
+  funkeln: `<path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/>`,
+};
+---
+
+<Layout
+  title={`${guide.name}-Guide`}
+  vorschaubild={vorschau.src}
+  noindex
+  description={`Alles für euer ${guide.name}-Shooting bei ${site.name}: Ablauf, Ort, Farben und Outfits.`}
+>
+  <!-- Titelseite -->
+  <section class="bg-linen pt-32 pb-20 sm:pt-40 sm:pb-28 print:bg-transparent print:pt-0 print:pb-0">
+    <div class="container-page grid items-center gap-12 lg:grid-cols-[6fr_5fr] lg:gap-20 print:block">
+      <div>
+        <p class="eyebrow">Euer {guide.name}-Guide</p>
+        <h1 class="mt-4 text-5xl sm:text-7xl print:text-6xl">{guide.titel}<br /><em class="font-light">{guide.titelKursiv}</em></h1>
+        <p class="mt-6 max-w-xl text-lg leading-relaxed text-ink-soft">{guide.intro}</p>
+        <p class="mt-4 text-sm tracking-wide text-ink-soft">Shooting · Ablauf · Styling — {site.name}</p>
+        <div class="mt-9 flex flex-col gap-3 sm:flex-row print:hidden">
+          <a href="#styling" class="btn-primary">Direkt zum Styling</a>
+        </div>
+      </div>
+      <div class="relative aspect-[4/5] overflow-hidden rounded-t-full print:rounded-tl-[6rem] print:rounded-tr-[1.25rem] print:rounded-br-[6rem] print:rounded-bl-[1.25rem] print:mt-12 print:aspect-[4/3]">
+        <Image
+          src={guide.fotos.titel.src}
+          alt={guide.fotos.titel.alt}
+          widths={[500, 800, 1100]}
+          sizes="(min-width: 1024px) 40vw, 100vw"
+          loading="eager"
+          class="absolute inset-0 h-full w-full bg-sand object-cover"
+          style={{ objectPosition: guide.fotos.titel.fokus }}
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- Atmosphäre -->
+  <section class={seite}>
+    <div class="container-page">
+      <div class="grid items-center gap-12 lg:grid-cols-2 lg:gap-20 print:grid-cols-2 print:gap-10">
+        <div>
+          <p class="eyebrow">Das Wichtigste zuerst</p>
+          <h2 class="mt-4 text-4xl sm:text-5xl">Ganz entspannt</h2>
+          <div class="mt-6 space-y-4 leading-relaxed text-ink-soft print:text-sm">
+            {guide.atmosphaere.text.map((t) => <p>{t}</p>)}
+          </div>
+        </div>
+        <div class="relative aspect-[4/5] overflow-hidden rounded-t-full print:aspect-square print:rounded-full">
+          <Image
+            src={guide.fotos.atmosphaere.src}
+            alt={guide.fotos.atmosphaere.alt}
+            widths={[500, 800, 1100]}
+            sizes="(min-width: 1024px) 40vw, 100vw"
+            class="absolute inset-0 h-full w-full bg-sand object-cover"
+            style={{ objectPosition: guide.fotos.atmosphaere.fokus }}
+          />
+        </div>
+      </div>
+      <div class="mt-14 grid gap-5 md:grid-cols-3 print:mt-8 print:grid-cols-3 print:gap-3">
+        {
+          guide.atmosphaere.punkte.map((p) => (
+            <article class:list={[karte, "bg-linen print:bg-transparent"]}>
+              <h3 class="text-2xl print:text-xl">{p.titel}</h3>
+              <p class="mt-2 leading-relaxed text-ink-soft print:text-sm">{p.text}</p>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Ablauf -->
+  <section class:list={[seite, "bg-linen print:bg-transparent"]}>
+    <div class="container-page">
+      <div class="mx-auto max-w-2xl text-center">
+        <p class="eyebrow">So läuft's ab</p>
+        <h2 class="mt-4 text-4xl sm:text-5xl">Von der Anfrage bis zu euren Bildern</h2>
+      </div>
+      <!-- Ablauf: senkrechte Linie mit Symbolen -->
+      <ol class="relative mx-auto mt-16 max-w-xl space-y-10 print:mt-14 print:space-y-12">
+        {
+          guide.ablauf.map((a, i) => (
+            <li class="relative flex items-start gap-6">
+              {i < guide.ablauf.length - 1 && (
+                <span aria-hidden="true" class="absolute top-14 left-7 h-[calc(100%-1rem)] w-px bg-rose-deep/30 print:h-[calc(100%-0.5rem)]" />
+              )}
+              <span
+                aria-hidden="true"
+                class="relative flex size-14 shrink-0 items-center justify-center rounded-full bg-cream text-rose-deep shadow-sm ring-1 ring-rose-deep/30 print:shadow-none"
+              >
+                <svg viewBox="0 0 24 24" class="size-6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" set:html={ablaufIcons[a.icon ?? "kamera"]} />
+              </span>
+              <div class="pt-1">
+                <h3 class="text-2xl print:text-3xl">{a.titel}</h3>
+                <p class="mt-1.5 leading-relaxed text-ink-soft">{a.text}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+
+      <!-- Ort -->
+      <div class="mt-24 grid items-start gap-12 lg:grid-cols-[2fr_3fr] lg:gap-16 print:mt-0 print:break-before-page print:grid-cols-[2fr_3fr] print:gap-8">
+        <div>
+          <p class="eyebrow">{guide.ort.eyebrow}</p>
+          <h2 class="mt-4 text-4xl sm:text-5xl print:text-4xl">{guide.ort.titel}</h2>
+          <p class="mt-5 leading-relaxed text-ink-soft print:text-sm">{guide.ort.text}</p>
+          <div class="relative mt-8 aspect-[4/3] overflow-hidden rounded-[2rem] print:mt-6">
+            <Image
+              src={guide.fotos.ort.src}
+              alt={guide.fotos.ort.alt}
+              widths={[400, 700]}
+              sizes="(min-width: 1024px) 35vw, 100vw"
+              class="absolute inset-0 h-full w-full bg-sand object-cover"
+              style={{ objectPosition: guide.fotos.ort.fokus }}
+            />
+          </div>
+        </div>
+        <div class="grid gap-5 sm:grid-cols-2 print:grid-cols-2 print:gap-3">
+          {
+            guide.ort.tipps.map((t) => (
+              <article class={karte}>
+                <h3 class="text-2xl print:text-xl">{t.titel}</h3>
+                <p class="mt-2 leading-relaxed text-ink-soft print:text-sm">{t.text}</p>
+              </article>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Farbpaletten -->
+  <section id="styling" class:list={[seite, "scroll-mt-20"]}>
+    <div class="container-page">
+      <div class="mx-auto max-w-2xl text-center">
+        <p class="eyebrow">Was ziehen wir an?</p>
+        <h2 class="mt-4 text-4xl sm:text-5xl">Farben, die harmonieren</h2>
+        <p class="mt-5 leading-relaxed text-ink-soft">
+          Vier Farbwelten zur Inspiration: Sucht euch einfach die aus, die sich nach euch anfühlt. Ein, zwei neutrale
+          Teile in Creme oder Beige passen fast immer dazu. Neu kaufen ist dafür meist gar nicht nötig. Oft findet sich
+          das Passende schon im Schrank.
+        </p>
+      </div>
+      <div class="mt-14 grid gap-6 sm:grid-cols-2 print:mt-10 print:gap-4">
+        {
+          farben.map((p) => (
+            <article class="relative rounded-[1.75rem] bg-linen p-7 sm:p-8 print:break-inside-avoid print:border print:border-ink/10 print:bg-transparent print:p-6">
+              <div class="grid grid-cols-4 gap-2 sm:gap-3">
+                {p.farben.map((f) => (
+                  <div>
+                    <div class="aspect-square rounded-full shadow-sm ring-1 ring-ink/10" style={{ backgroundColor: f.hex }} />
+                    <p class="mt-2 text-center text-xs text-ink-soft">{f.name}</p>
+                  </div>
+                ))}
+              </div>
+              <h3 class="mt-6 text-2xl">{p.name}</h3>
+              <p class="mt-2 leading-relaxed text-ink-soft print:text-sm">{p.text}</p>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Grundregeln -->
+  <section class:list={[seite, "bg-linen print:bg-transparent"]}>
+    <div class="container-page">
+      <div class="mx-auto max-w-2xl text-center">
+        <p class="eyebrow">Styling leicht gemacht</p>
+        <h2 class="mt-4 text-4xl sm:text-5xl">Sechs einfache Regeln</h2>
+      </div>
+      <div class="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 print:mt-8 print:grid-cols-2 print:gap-3">
+        {
+          regeln.map((r, i) => (
+            <article class={karte}>
+              <span class="font-serif text-4xl text-rose print:text-3xl">0{i + 1}</span>
+              <h3 class="mt-3 text-2xl print:mt-1 print:text-xl">{r.titel}</h3>
+              <p class="mt-2 leading-relaxed text-ink-soft print:text-sm">{r.text}</p>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Outfits für diesen Anlass + Lieber nicht -->
+  <section class={seite}>
+    <div class="container-page">
+      <div class="grid items-center gap-12 lg:grid-cols-[5fr_6fr] lg:gap-20 print:grid-cols-[2fr_3fr] print:gap-8">
+        <div class="relative aspect-[4/5] overflow-hidden rounded-t-full print:rounded-[1.5rem]">
+          <Image
+            src={guide.fotos.outfit.src}
+            alt={guide.fotos.outfit.alt}
+            widths={[500, 800, 1100]}
+            sizes="(min-width: 1024px) 40vw, 100vw"
+            class="absolute inset-0 h-full w-full bg-sand object-cover"
+            style={{ objectPosition: guide.fotos.outfit.fokus }}
+          />
+        </div>
+        <div>
+          <p class="eyebrow">Outfits fürs {guide.name}-Shooting</p>
+          <h2 class="mt-4 text-4xl sm:text-5xl print:text-4xl">Das passt gut</h2>
+          <dl class="mt-8 space-y-6 print:mt-5 print:space-y-3">
+            {
+              guide.outfit.map((o) => (
+                <div class="border-t border-ink/10 pt-5 print:pt-3">
+                  <dt class="font-serif text-2xl print:text-xl">{o.titel}</dt>
+                  <dd class="mt-1.5 leading-relaxed text-ink-soft print:text-sm">{o.text}</dd>
+                </div>
+              ))
+            }
+          </dl>
+        </div>
+      </div>
+
+      <div class="mt-16 rounded-[1.75rem] border border-ink/10 p-8 sm:p-10 print:mt-8 print:break-inside-avoid print:p-6">
+        <p class="eyebrow">Besser zu Hause lassen</p>
+        <ul class="mt-5 grid gap-x-10 gap-y-3 sm:grid-cols-2 print:mt-3 print:grid-cols-2 print:gap-y-1.5">
+          {
+            lieberNicht.map((x) => (
+              <li class="flex gap-3 leading-relaxed text-ink-soft print:text-sm">
+                <span aria-hidden="true" class="text-rose-deep">✕</span>
+                {x}
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Geschwister + Checkliste -->
+  <section class:list={[seite, "bg-sand/50 print:bg-transparent"]}>
+    <div class="container-page">
+      {
+        guide.geschwister && (
+          <div class="grid gap-10 lg:grid-cols-2 lg:gap-16 print:grid-cols-2 print:gap-8">
+            <div>
+              <p class="eyebrow">{guide.geschwister.eyebrow ?? "Kind bleibt Kind"}</p>
+              <h2 class="mt-4 text-4xl sm:text-5xl print:text-4xl">{guide.geschwister.titel}</h2>
+              <div class="mt-6 space-y-4 leading-relaxed text-ink-soft print:text-sm">
+                {guide.geschwister.text.map((t) => <p>{t}</p>)}
+              </div>
+            </div>
+            <ul class="space-y-4 self-end print:space-y-2">
+              {guide.geschwister.tipps.map((t) => (
+                <li class="flex gap-3 rounded-[1.25rem] bg-cream p-5 leading-relaxed text-ink-soft print:border print:border-ink/10 print:p-4 print:text-sm">
+                  <span aria-hidden="true" class="text-rose-deep">♡</span>
+                  {t}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )
+      }
+
+      <div class="mt-16 rounded-[1.75rem] bg-ink p-8 text-cream sm:p-12 print:mt-10 print:break-inside-avoid print:p-8">
+        <p class="text-xs font-semibold tracking-[0.25em] text-rose uppercase">Checkliste</p>
+        <h3 class="mt-3 text-3xl sm:text-4xl">Vor eurem {guide.name}-Shooting</h3>
+        <ul class="mt-8 grid gap-x-10 gap-y-3 sm:grid-cols-2 print:mt-5 print:grid-cols-2 print:gap-y-2">
+          {
+            guide.checkliste.map((c) => (
+              <li class="flex gap-3 leading-relaxed text-cream/85 print:text-sm">
+                <span aria-hidden="true" class="mt-1.5 size-3 shrink-0 rounded-sm border border-rose" />
+                {c}
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Abschluss -->
+  <section class="bg-linen py-20 sm:py-28 print:break-before-page print:bg-transparent print:py-0">
+    <div class="container-page grid items-center gap-12 lg:grid-cols-[5fr_6fr] lg:gap-20 print:block">
+      <div class="relative aspect-[4/5] overflow-hidden rounded-t-full print:mb-10 print:aspect-[3/4] print:max-w-[55%]">
+        <Image
+          src={guide.fotos.abschluss.src}
+          alt={guide.fotos.abschluss.alt}
+          widths={[500, 800, 1100]}
+          sizes="(min-width: 1024px) 40vw, 100vw"
+          class="absolute inset-0 h-full w-full bg-sand object-cover"
+          style={{ objectPosition: guide.fotos.abschluss.fokus }}
+        />
+      </div>
+      <div>
+        <p class="eyebrow">Bis bald!</p>
+        <h2 class="mt-4 text-4xl sm:text-5xl">{guide.abschluss}</h2>
+        <p class="mt-5 max-w-xl leading-relaxed text-ink-soft">
+          Noch unsicher bei den Outfits? Legt eure Auswahl nebeneinander, macht ein schnelles Handyfoto und schickt es
+          mir. Ich sage euch ehrlich, was gut zusammenpasst. Und bei allen anderen Fragen: Schreibt mir jederzeit.
+        </p>
+        <ul class="mt-8 space-y-2 text-lg">
+          <li><a href={`mailto:${site.email}`} class="hover:text-rose-deep">{site.email}</a></li>
+          <li><a href={telHref} class="hover:text-rose-deep">{site.phone}</a></li>
+          <li class="hidden print:block">{Astro.site?.host}</li>
+        </ul>
+        <p class="mt-10 text-xs text-ink-soft">{guide.name}-Guide {jahr} · {site.name}</p>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<script>
+  // Vor dem Drucken/Speichern alle Bilder laden (sonst fehlen nicht gescrollte Bilder im PDF)
+  const ladeAlleBilder = () => {
+    const imgs = [...document.querySelectorAll<HTMLImageElement>("main img")];
+    imgs.forEach((img) => (img.loading = "eager"));
+    return Promise.all(imgs.map((img) => (img.complete ? Promise.resolve() : img.decode().catch(() => {}))));
+  };
+
+  document.querySelectorAll("[data-pdf]").forEach((b) =>
+    b.addEventListener("click", async () => {
+      await ladeAlleBilder();
+      window.print();
+    }),
+  );
+  window.addEventListener("beforeprint", () => void ladeAlleBilder());
+  if (new URLSearchParams(location.search).has("pdf")) void ladeAlleBilder();
+</script>

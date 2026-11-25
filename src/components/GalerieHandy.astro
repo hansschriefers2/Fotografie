@@ -1,0 +1,72 @@
+---
+// Gezeichnetes Handy mit einer Online-Galerie – zeigt, wie Kunden ihre Bilder bekommen.
+// Bewusst stilisiert (keine echte Pixieset-Oberfläche), mit eigenen Fotos.
+import { Image } from "astro:assets";
+import { photos } from "../data/fotos";
+// Nur hier im Handy verwendet – bewusst nicht in Galerie/Slideshow
+import schultern from "../assets/handy/schultern.jpg";
+import { site } from "../config";
+
+const titel = photos.familie13;
+const raster = [
+  { foto: photos.baby06, herz: true },
+  { foto: photos.familie06, herz: false },
+  { foto: photos.baby14, herz: true },
+  { foto: photos.familie04, herz: true },
+  { foto: photos.baby10, herz: false },
+  { foto: { src: schultern, alt: "" }, herz: false },
+  { foto: photos.baby09, herz: true },
+  { foto: photos.familie09, herz: false },
+  { foto: photos.baby02, herz: false },
+];
+---
+
+<div
+  class="relative mx-auto w-[260px] rounded-[2.6rem] bg-ink p-2.5 shadow-[0_30px_60px_-20px_rgba(63,53,49,0.45)] sm:w-[290px]"
+  role="img"
+  aria-label="Beispiel: So sieht eure private Online-Galerie auf dem Handy aus"
+>
+  <div class="relative overflow-hidden rounded-[2.1rem] bg-cream" aria-hidden="true">
+    <!-- Kamera-Aussparung -->
+    <div class="absolute top-2 left-1/2 z-10 h-5 w-20 -translate-x-1/2 rounded-full bg-ink"></div>
+
+    <!-- Titelbild -->
+    <div class="relative aspect-[4/5]">
+      <Image src={titel.src} alt="" widths={[300, 600]} sizes="290px" class="absolute inset-0 h-full w-full object-cover" />
+      <div class="absolute inset-0 bg-gradient-to-t from-ink/70 via-ink/10 to-transparent"></div>
+      <div class="absolute inset-x-0 bottom-0 p-5 text-center text-cream">
+        <p class="font-serif text-2xl leading-tight">Eure Galerie</p>
+        <p class="mt-1 text-[0.55rem] font-semibold tracking-[0.3em] uppercase opacity-80">{site.name}</p>
+      </div>
+    </div>
+
+    <!-- Leiste -->
+    <div class="flex items-center justify-between px-4 py-2.5 text-[0.6rem] text-ink-soft">
+      <span>Alle Fotos</span>
+      <span class="flex items-center gap-1 text-rose-deep">
+        <svg viewBox="0 0 24 24" class="size-3" fill="currentColor"><path d="M12 21s-7.5-4.6-10-9.3C.4 8.5 2.3 4.5 6 4.5c2.2 0 3.6 1.2 4.4 2.4L12 9l1.6-2.1c.8-1.2 2.2-2.4 4.4-2.4 3.7 0 5.6 4 4 7.2C19.5 16.4 12 21 12 21z"/></svg>
+        4 Favoriten
+      </span>
+      <span class="flex items-center gap-1">
+        <svg viewBox="0 0 24 24" class="size-3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11m0 0-4-4m4 4 4-4M5 20h14"/></svg>
+        Download
+      </span>
+    </div>
+
+    <!-- Bilderraster -->
+    <div class="grid grid-cols-3 gap-0.5 px-0.5 pb-0.5">
+      {
+        raster.map(({ foto, herz }) => (
+          <div class="relative aspect-square overflow-hidden bg-sand">
+            <Image src={foto.src} alt="" widths={[160]} sizes="96px" class="absolute inset-0 h-full w-full object-cover" />
+            {herz && (
+              <svg viewBox="0 0 24 24" class="absolute right-1 bottom-1 size-3.5 text-cream drop-shadow" fill="currentColor">
+                <path d="M12 21s-7.5-4.6-10-9.3C.4 8.5 2.3 4.5 6 4.5c2.2 0 3.6 1.2 4.4 2.4L12 9l1.6-2.1c.8-1.2 2.2-2.4 4.4-2.4 3.7 0 5.6 4 4 7.2C19.5 16.4 12 21 12 21z" />
+              </svg>
+            )}
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</div>

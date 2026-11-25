@@ -105,6 +105,26 @@
   }
 }
 
+/* Drucken / „Als PDF speichern“ (v. a. für den Preisguide) */
+@page {
+  size: A4;
+  margin: 16mm 14mm;
+}
+@media print {
+  html,
+  body {
+    background: #fff;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+  [data-header],
+  [data-mobile-menu],
+  body > footer,
+  body > a[href="#inhalt"] {
+    display: none !important;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -114,5 +134,24 @@
   *::after {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+/* Sanftes Einblenden beim Scrollen (Klasse wird per Script nur gesetzt, wenn Bewegung erlaubt ist) */
+.einblenden {
+  opacity: 0;
+  transform: translateY(1.25rem);
+  transition:
+    opacity 0.9s ease-out var(--verzug, 0ms),
+    transform 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) var(--verzug, 0ms);
+}
+.einblenden.sichtbar {
+  opacity: 1;
+  transform: none;
+}
+@media print {
+  .einblenden {
+    opacity: 1 !important;
+    transform: none !important;
   }
 }

@@ -1,0 +1,4 @@
+Visitenkarte (91 × 61 mm inkl. 3 mm Beschnitt) – Quelle für das Druck-PDF.
+PDF erzeugen: karte.html in Chrome öffnen → Drucken → Als PDF speichern
+(Ränder: Keine, Hintergrundgrafiken an) – oder Claude fragen.
+QR-Code (qr.svg) führt zu https://schriefers-fotografie.de/?ref=karte

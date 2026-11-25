@@ -20,7 +20,11 @@ const text = `Hallo ${site.firstName},\n\n${tipps.map((t) => `${t}\n\n`).join(""
 const mailHref = `mailto:${site.email}?subject=${encodeURIComponent(betreff)}&body=${encodeURIComponent(text)}`;
 ---
 
-<Layout title="Kontakt" description="Fragt euer Baby-, Familien- oder Babybauchshooting unverbindlich an.">
+<Layout
+  title="Kontakt"
+  seoTitel="Kontakt & Anfrage – Fotoshooting in Pforzheim & Enzkreis | Schriefers Fotografie"
+  description="Fragt euer Newborn-, Babybauch-, Familien- oder Paarshooting in Wurmberg, Pforzheim und Umgebung unverbindlich an, per E-Mail, Telefon oder WhatsApp."
+>
   <PageHeader
     eyebrow="Kontakt"
     title="Schön, dass ihr da seid"

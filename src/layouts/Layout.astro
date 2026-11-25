@@ -4,6 +4,7 @@ import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import Kontaktleiste from "../components/Kontaktleiste.astro";
 import { site } from "../config";
+import { strukturDaten } from "../data/seo";
 
 interface Props {
   title?: string;
@@ -11,10 +12,16 @@ interface Props {
   noindex?: boolean;
   /** Eigenes Vorschaubild für WhatsApp & Co. (Pfad, z. B. aus getImage) – sonst /og-image.jpg */
   vorschaubild?: string;
+  /** Kompletter Seitentitel für Google (ersetzt „Titel | Schriefers Fotografie“) */
+  seoTitel?: string;
+  /** Zusätzliche strukturierte Daten nur für diese Seite (z. B. FAQ) */
+  schema?: object[];
 }
 
-const { title, description = site.beschreibung, noindex = false, vorschaubild } = Astro.props;
-const seitenTitel = title ? `${title} | ${site.name}` : `${site.name} – ${site.tagline}`;
+const { title, description = site.beschreibung, noindex = false, vorschaubild, seoTitel, schema = [] } = Astro.props;
+const seitenTitel = seoTitel ?? (title ? `${title} | ${site.name}` : `${site.name} – ${site.tagline}`);
+// Strukturierte Daten für Google & KI-Assistenten (nicht auf noindex-Seiten)
+const jsonLd = noindex ? null : JSON.stringify({ "@context": "https://schema.org", "@graph": [...strukturDaten, ...schema] });
 const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : undefined;
 // Druckvorlagen (Guides, Preisguide) ohne Einblend-Effekte und Kontaktleiste
 const pfad = Astro.url.pathname;
@@ -45,6 +52,8 @@ const ogImage = Astro.site ? new URL(ogPfad, Astro.site).href : ogPfad;
     <link rel="icon" href="/favicon.ico" sizes="32x32" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="sitemap" href="/sitemap.xml" />
+    {jsonLd && <script is:inline type="application/ld+json" set:html={jsonLd} />}
     <!-- Safari startet Übergänge beim Laden bei Standardwerten (Logo kurz blau, alle Slideshow-Fotos
          kurz sichtbar) – daher Übergänge erst erlauben, wenn die Seite geladen ist -->
     <style is:inline>html.laedt *,html.laedt *::before,html.laedt *::after{transition:none!important}</style>

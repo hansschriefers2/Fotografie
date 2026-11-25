@@ -4,7 +4,7 @@
 // werden automatisch berechnet.
 import type { Photo } from "./fotos";
 import { photos } from "./fotos";
-import { orteKurz } from "../config";
+import { orteKurz, orte, weitereRegionen } from "../config";
 
 export const euro = (n: number) => `${n.toLocaleString("de-DE")} €`;
 
@@ -189,4 +189,22 @@ export const faq = [
     q: "Wie bekommen wir unsere Bilder?",
     a: "Etwa zwei Wochen nach dem Shooting erhaltet ihr eine passwortgeschützte Online-Galerie, aus der ihr eure Bilder in voller Auflösung herunterladen könnt.",
   },
+];
+
+/** FAQ auf der Preisseite (sichtbar + für Google/KI-Assistenten): Orts- und Preisfragen vorneweg */
+const nameVon = (id: string) => shootings.find((s) => s.id === id)!;
+export const faqWebsite = [
+  {
+    q: "Was kostet ein Fotoshooting bei dir?",
+    a: `Ein Babybauch-, Familien- oder Kindershooting kostet ${euro(nameVon("babybauch").preis)}, ein Newborn-Shooting ${euro(nameVon("newborn").preis)}. Immer dabei sind ein Vorgespräch, ${fotosInklusive} bearbeitete Fotos, eure private Online-Galerie und die Anfahrt bis ${anfahrtFreiKm} km ab Wurmberg.`,
+  },
+  {
+    q: "Wo fotografierst du?",
+    a: `Ich wohne in Wurmberg und fotografiere in ${orte.filter((o) => o !== "Wurmberg").join(", ")} und im ganzen Enzkreis. Bis ${anfahrtFreiKm} km fallen keine Anfahrtskosten an. Regelmäßig bin ich außerdem in ${weitereRegionen.map((o) => o.replace(/^\d+\s*/, "")).join(" und ")}, Termine dort nach Absprache.`,
+  },
+  {
+    q: "Kommst du auch zu uns nach Hause?",
+    a: "Ja, sehr gern. Newborn-Shootings mache ich immer bei euch zu Hause, damit euer Baby in vertrauter Umgebung bleibt. Babybauch- und Familienshootings finden draußen in der Natur oder bei euch daheim statt, ganz wie ihr mögt.",
+  },
+  ...faq,
 ];
